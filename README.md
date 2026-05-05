@@ -28,7 +28,7 @@ Three samples generated from the same transcript ([`transcripts/cs-interview-exa
 
 **Recommended listen order:** B → A → C. B is the baseline; A shows the dialogue-API upgrade; C shows what v4 does on top of segment-mode stitching.
 
-> **Bottom line:** v4 in segment mode is the project's new default — it sounds confident and natural without needing v3 alpha access for the Dialogue API. Dialogue mode (v3) is still available with `--mode dialogue` and is the right pick when you want the model to "hear" both speakers in one pass.
+> **Bottom line:** v4 in segment mode is the default and recommended path. It's the newest expressive model, sounds confident and natural, and gives you per-line control over voice settings. Dialogue mode (v3) is still available via `--mode dialogue` if you want the model to "hear" both speakers in one pass — useful for reactive moments — but it's opt-in.
 
 ---
 
@@ -228,42 +228,37 @@ Output lands at `out/<filename>.mp3`. Open with `open out/sample.mp3`.
 
 ## 🧠 Two ways to generate audio (modes)
 
-Three modes are available. The **default** is `auto` — it tries dialogue first and falls back to segment + v4 if your account can't use the dialogue API. **Both paths sound great**; pick based on the tradeoff you want.
+The default is `segment` mode with the `eleven_v4` model — the recommended path. `dialogue` is available as opt-in for the cases where you specifically want cross-speaker prosody matching (and you're willing to use v3 to get it).
 
-| Mode | What it does | Default model | When to use |
+| Mode | What it does | Model | Use when |
 | --- | --- | --- | --- |
-| **`auto`** _(default)_ | Tries `dialogue` (v3) first, falls back to `segment` (v4) on access errors. | varies | Always. Just use this. |
-| **`segment`** | Generates each speaker line individually via `/v1/text-to-speech`, then ffmpeg-concats with silence padding. Per-segment `voiceSettings` honored, finest-grained cache. | **`eleven_v4`** | The recommended path. Newest model, tighter pacing, no v3 alpha required. |
-| **`dialogue`** | Sends each ≤1900-char chunk to `/v1/text-to-dialogue`. The v3 model generates the whole exchange as one coherent performance — real turn-taking and prosody matching across speakers. | `eleven_v3` _(endpoint requirement)_ | When you want the model to "hear" both speakers in one pass. Slightly slower iteration loop because the cache is per-chunk. |
+| **`segment`** _(default)_ | Each speaker line goes through `/v1/text-to-speech` individually, then ffmpeg-concats with silence padding. Per-line `voiceSettings` honored. Finest-grained cache (edit one line → only that line re-generates). | **`eleven_v4`** | Always — it's the recommended path. v4 is the newest expressive model and sounds confident and natural. |
+| **`dialogue`** _(opt-in)_ | Sends each ≤1900-char chunk to `/v1/text-to-dialogue`. v3 generates the whole exchange as one coherent performance with real turn-taking. | `eleven_v3` _(pinned by endpoint)_ | You specifically want the model to "hear" both speakers in one pass — e.g., reactive moments where one speaker's laugh should affect the other's reply. Coarser cache (per chunk). |
+| `auto` _(legacy)_ | Tries `dialogue` first, falls back to `segment` on v3 access errors. | varies | Mostly for testing both paths. Default is `segment` now. |
 
 ```bash
-# Default (auto) — recommended
+# Default — segment mode + v4
 node src/index.js transcripts/sample.txt
 
-# Force segment + v4 (the default, explicit)
-node src/index.js transcripts/sample.txt --mode segment
-
-# Force dialogue mode (v3 only — endpoint requirement)
+# Try dialogue mode (v3 only, opt-in)
 node src/index.js transcripts/sample.txt --mode dialogue
 
-# Use a different model in segment mode
-ELEVEN_MODEL_ID=eleven_v4_hq node src/index.js transcripts/sample.txt --mode segment
-ELEVEN_MODEL_ID=eleven_v3    node src/index.js transcripts/sample.txt --mode segment
+# Override the segment-mode model
+ELEVEN_MODEL_ID=eleven_v4_hq node src/index.js transcripts/sample.txt
+ELEVEN_MODEL_ID=eleven_v3    node src/index.js transcripts/sample.txt
 
 # Deterministic generation (same seed = same audio across runs)
 node src/index.js transcripts/sample.txt --seed 42
 ```
 
-**Choosing a model for segment mode** (override with `ELEVEN_MODEL_ID` env var):
+**Model selection in segment mode** (override with `ELEVEN_MODEL_ID` env var):
 
 | Model | Description | Default? |
 | --- | --- | --- |
 | **`eleven_v4`** | Newest expressive model. Tighter pacing, confident delivery, supports all v3 audio tags. | ✅ default |
 | `eleven_v4_hq` | Higher-quality variant of v4. Slightly slower, similar audio quality in our testing. | |
 | `eleven_v3` | The model the dialogue API uses. More leisurely pacing than v4. | |
-| `eleven_multilingual_v2` | Pre-v3 model. Audio tags **not** supported (brackets get read aloud). Useful only as a last-resort fallback. | |
-
-**About v3 alpha access:** the Dialogue API is v3-only. If your account can't use v3 yet, `auto` mode automatically falls back to segment + v4 (which is just as good for most uses). Request v3 access at https://help.elevenlabs.io/hc/en-us/articles/35869066075921 if you want dialogue mode.
+| `eleven_multilingual_v2` | Pre-v3 model. Audio tags **not** supported (brackets get read aloud). Last-resort fallback only. | |
 
 **Audio polish (both modes):** Every generated clip runs through an ffmpeg polish pass — leading/trailing silence trimming, EBU R128 loudness normalization to -16 LUFS (podcast standard), output at 192 kbps stereo MP3. This eliminates segment-to-segment volume jumps and dead air between turns.
 
@@ -357,7 +352,7 @@ Either you still have `REPLACE_WITH_VOICE_ID` in your config, or the speaker nam
 <details>
 <summary><b>The model reads <code>[brackets]</code> as words</b></summary>
 
-You're not on `eleven_v3`. If your account has v3 alpha access, leave `ELEVEN_MODEL_ID` unset. If not, request access at [help.elevenlabs.io](https://help.elevenlabs.io/hc/en-us/articles/35869066075921). As a fallback, run with `ELEVEN_MODEL_ID=eleven_multilingual_v2` — works without v3 access but the tags won't render.
+Your `ELEVEN_MODEL_ID` is set to a pre-v3 model like `eleven_multilingual_v2`, which doesn't recognize audio tags. Unset it (or set it to `eleven_v4` / `eleven_v3`) to get tag rendering back.
 
 </details>
 
@@ -378,7 +373,7 @@ Stability is too high. Lower `voiceSettings.stability` for that speaker to ~0.3 
 <details>
 <summary><b>"Dialogue mode unavailable" warning, falling back to segment</b></summary>
 
-Your account doesn't have v3 alpha access yet. The script falls back automatically; audio still works but tags are less expressive. Request alpha access at https://help.elevenlabs.io/hc/en-us/articles/35869066075921 — usually approved within a few days. Or force segment mode anytime with `--mode segment`.
+You ran `--mode auto` and your account can't use the dialogue API (v3 alpha gated). The script falls back to segment mode automatically — that's fine, segment + v4 is the recommended path anyway. To skip the dialogue probe entirely, just run without `--mode` (default is `segment` now). Or request v3 alpha access at https://help.elevenlabs.io/hc/en-us/articles/35869066075921 if you specifically want dialogue mode.
 
 </details>
 
@@ -455,9 +450,9 @@ cp voices.config.example.json voices.config.json             # create your voice
 echo 'ELEVENLABS_API_KEY=sk_your_key' > .env                  # set your API key
 
 # Generate
-node src/index.js transcripts/sample.txt                     # default (auto mode)
-node src/index.js transcripts/your-file.txt --mode dialogue  # force dialogue (most natural; needs v3 alpha)
-node src/index.js transcripts/your-file.txt --mode segment   # force segment (no v3 alpha needed)
+node src/index.js transcripts/sample.txt                     # default (segment + v4)
+node src/index.js transcripts/your-file.txt --mode dialogue  # opt into dialogue mode (v3, cross-speaker prosody)
+ELEVEN_MODEL_ID=eleven_v4_hq node src/index.js transcripts/x  # try the HQ variant
 node src/index.js transcripts/your-file.txt -o foo.mp3       # custom output path
 node src/index.js transcripts/your-file.txt --seed 42        # deterministic generation
 node src/index.js transcripts/your-file.txt --no-cache       # force fresh take

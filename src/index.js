@@ -18,11 +18,13 @@ function usage() {
 Options:
   -o, --output <path>        Output MP3 path (default: out/<basename>.mp3)
   --config <path>            Voice config (default: voices.config.json)
-  --mode <auto|dialogue|segment>
-                             Generation mode (default: auto)
-                               auto:     try dialogue, fall back to segment on v3 access errors
-                               dialogue: server-side multi-speaker via /text-to-dialogue (best naturalness, requires v3 alpha)
-                               segment:  per-segment TTS, then concat (works without v3 alpha; voiceSettings honored)
+  --mode <segment|dialogue|auto>
+                             Generation mode (default: segment)
+                               segment:  per-segment TTS via /text-to-speech, then concat. Default model: eleven_v4.
+                                         Per-line voiceSettings honored. Recommended path.
+                               dialogue: server-side multi-speaker via /text-to-dialogue. Hard-pinned to eleven_v3.
+                                         Best cross-speaker prosody but coarser cache.
+                               auto:     try dialogue first, fall back to segment on v3 access errors.
   --no-cache                 Force regeneration of all clips
   --seed <int>               Seed for deterministic generation
   -h, --help                 Show this help`);
@@ -72,7 +74,7 @@ async function main() {
     options: {
       output: { type: 'string', short: 'o' },
       config: { type: 'string', default: 'voices.config.json' },
-      mode: { type: 'string', default: 'auto' },
+      mode: { type: 'string', default: 'segment' },
       'no-cache': { type: 'boolean', default: false },
       seed: { type: 'string' },
       help: { type: 'boolean', short: 'h', default: false },

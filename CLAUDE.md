@@ -63,9 +63,11 @@ Then:
 | no transcripts | Tell them to drop a `.txt` file into `transcripts/` formatted as `[hh:mm:ss] Speaker Name: text…`. Show them `transcripts/sample.txt` as the template. |
 | all green | See "Pre-flight before generating" below. |
 
-## Pre-flight before generating (cost / time gate)
+## Pre-flight before generating (info only, no gate)
 
-Before kicking off `node src/index.js …`, parse the transcript yourself and report:
+Jake and Tanner are ElevenLabs employees with unlimited usage. **Do not gate or prompt for confirmation based on transcript length or cost.** Just run.
+
+Before kicking off `node src/index.js …`, you can briefly report what's about to happen so the user knows what to expect — but proceed without asking:
 
 ```bash
 node -e "
@@ -75,22 +77,22 @@ import('./src/parse.js').then(async ({ parseTranscript }) => {
   const segs = parseTranscript(text);
   const totalChars = segs.reduce((n, s) => n + s.text.length, 0);
   const speakers = [...new Set(segs.map(s => s.speaker))];
-  console.log(JSON.stringify({ segments: segs.length, totalChars, speakers }));
+  // Wall-clock estimate: ~3s/segment in segment mode, sequential.
+  const estSec = segs.length * 3;
+  console.log(JSON.stringify({ segments: segs.length, totalChars, speakers, estimatedWallClockSec: estSec }));
 });
 " transcripts/<file>.txt
 ```
 
-Then choose a posture based on segment count:
+Posture:
 
-| Segments | Posture |
+| Segments | What to say |
 | --- | --- |
-| ≤ 10 | Just go. Mention it's a small batch and proceed. |
-| 11–30 | Mention "this is N segments, ~X characters, should take ~Y seconds." Then proceed unless the user pauses you. |
-| 30+ | **Stop and offer a dry-run.** "This is N segments. Want me to generate just the first 3-5 segments first so you can sanity-check voice quality and pacing before we burn credits on the full thing?" Wait for confirmation. |
+| ≤ 30 | Just run. One-line "generating N segments" log is enough. |
+| 30+ | One-line "this is N segments, roughly N×3 = M seconds wall-clock." Then run. |
+| 100+ | One-line heads-up plus mention that segment mode is sequential — they can interrupt with Ctrl+C if they want. Then run. |
 
-Rough character→cost rule of thumb (varies by plan): 1 character ≈ 1 ElevenLabs credit. Don't quote exact dollar figures (plans differ); use credit/character counts and let the user judge.
-
-If they decline the dry-run on a long transcript, run anyway — it's their call.
+Don't suggest dry-runs on long transcripts unless the user explicitly says they want to try voices first. The cache is good enough that re-runs after voice changes are nearly free for unchanged segments.
 
 ## Helping with voice IDs
 
@@ -104,27 +106,25 @@ If they say something like _"help me pick voices"_ or _"I want a curious-soundin
 
 Don't auto-pick voices unless they explicitly ask. Their casting choice matters.
 
-## Modes (`--mode auto|dialogue|segment`)
+## Modes (`--mode segment|dialogue|auto`)
 
-The CLI ships three modes. Default is `auto`.
+The CLI ships three modes. **Default is `segment`** with `eleven_v4`. That's the recommended path; don't push users toward dialogue mode unless they specifically ask for cross-speaker prosody.
 
-- **`segment`** — generates each line individually via `/v1/text-to-speech`, then concats. Per-segment `voiceSettings` honored. Finest-grained cache. **Defaults to `eleven_v4`** (newest expressive model, no alpha gate, tighter pacing than v3). Override via `ELEVEN_MODEL_ID` env var. **This is the project's recommended default path** — it sounds confident and natural without needing the dialogue endpoint.
-- **`dialogue`** — sends each ≤1900-char chunk to `/v1/text-to-dialogue`. Generates the whole exchange as one coherent performance: real turn-taking, prosody matching, interruptions. Coarser cache (per chunk). **Hard-pinned to `eleven_v3`** — the dialogue endpoint requires v3 specifically; v4 is TTS-only. `ELEVEN_MODEL_ID` does not apply here.
-- **`auto`** — try dialogue (v3) first, automatically fall back to segment (v4) if the dialogue endpoint returns a v3 access error (4xx / `model_not_found` / permission / alpha hints). Fallback is built into `src/index.js` (`isV3AccessError`). User sees a warning + the alpha-access link, then segment mode runs. **You don't need to handle this manually.**
+- **`segment`** _(default, recommended)_ — generates each line individually via `/v1/text-to-speech`, then concats. Per-segment `voiceSettings` honored. Finest-grained cache. Defaults to `eleven_v4` (newest expressive model, no alpha gate, tighter pacing than v3). Override the model with `ELEVEN_MODEL_ID` env var. **This is what the user wants 95% of the time.**
+- **`dialogue`** _(opt-in)_ — sends each ≤1900-char chunk to `/v1/text-to-dialogue`. Generates the whole exchange as one coherent performance: real turn-taking, prosody matching, interruptions. Hard-pinned to `eleven_v3` — the endpoint requires v3 specifically; v4 is TTS-only. `ELEVEN_MODEL_ID` does not apply here. Coarser cache (per chunk). Useful when the user explicitly wants cross-speaker reactivity (e.g., a laugh in one line affecting prosody of the next).
+- **`auto`** _(legacy)_ — try dialogue first, fall back to segment on v3 access errors. Mostly there for testing. Default flipped away from this; only use it if explicitly asked.
 
-When the user asks "which mode should I use?" — recommend `auto` (the default). Mention the trade-off: dialogue captures cross-speaker prosody (e.g. one laugh answering another) but the cache is per-chunk so iteration is slower; segment + v4 gives per-line voiceSettings and finest-grain caching with audio quality that's nearly as good in most cases.
+When the user asks "which mode?" — recommend `segment` (the default). Don't volunteer dialogue mode unless they describe a need that specifically benefits from it (laugh-on-laugh reactivity, interruption-heavy dialogue, etc.).
 
-If the user wants to **A/B compare**, suggest:
+If the user wants to **A/B compare** anyway, suggest:
 
 ```bash
-node src/index.js transcripts/<file>.txt --mode dialogue -o out/dialogue.mp3
-node src/index.js transcripts/<file>.txt --mode segment  -o out/segment-v4.mp3
-ELEVEN_MODEL_ID=eleven_v3 node src/index.js transcripts/<file>.txt --mode segment -o out/segment-v3.mp3
+node src/index.js transcripts/<file>.txt                       -o out/segment-v4.mp3
+node src/index.js transcripts/<file>.txt --mode dialogue       -o out/dialogue-v3.mp3
+ELEVEN_MODEL_ID=eleven_v3 node src/index.js transcripts/<file>.txt -o out/segment-v3.mp3
 ```
 
-The repo ships three pre-rendered samples in `samples/` (A: dialogue+v3, B: segment+v3, C: segment+v4) generated from `transcripts/cs-interview-example.txt` so the user can listen first.
-
-If the user already attempted dialogue mode and got a permission error in `auto`, **don't suggest re-trying dialogue on every subsequent run** — they need to request alpha access first. Default to `--mode segment` until they confirm access landed.
+The repo ships three pre-rendered samples in `samples/` (A: dialogue+v3, B: segment+v3, C: segment+v4) from `transcripts/cs-interview-example.txt` — point users at those before generating their own A/B. After listening, the project chose C (segment + v4) as the default.
 
 ## Model selection (segment mode only)
 
@@ -144,7 +144,7 @@ Per-account access varies. Use `mcp__ElevenLabs__list_models` (or `curl https://
 When the user is unhappy with output, or when they show up with a long transcript and want to try things:
 
 - **"Narrow to a 2-minute snippet first."** A 30-min interview iteration loop (tweak tag → wait 2 min for full regen → listen → tweak again) is awful. Suggest cutting a representative ~2-min slice (10-20 segments) into `transcripts/sample-snippet.txt`, iterating on voices and tags there until it sounds right, then running the full thing.
-- **"Run the same script 2-3 times."** v3 inflection varies between generations. Same input can give noticeably different reads. Before recommending a tag change, suggest re-running with `--no-cache` to see if a different take fixes it. Save credits and frustration.
+- **"Run the same script 2-3 times."** v3 inflection varies between generations. Same input can give noticeably different reads. Before recommending a tag change, suggest re-running with `--no-cache` to see if a different take fixes it.
 - **One change at a time.** Don't change voice + stability + tags + speaker name in one round. Change one knob, regenerate the affected segment(s), listen, then move to the next knob.
 
 ## When generation feels off
@@ -185,7 +185,7 @@ When the user asks "how do I…":
 - **Don't commit `.env` or `voices.config.json`.** They're gitignored. If you ever propose `git add -A`, run `git status` first and visually confirm those files aren't appearing.
 - **Don't paste interview content into commit messages, PR descriptions, or any persistent file** (including `MEMORY.md` or any docs). Even if the transcript looks sanitized, treat it as private. Commit messages describe the change, not the content.
 - **Don't `cat` the transcript or `.env` into terminal output if the user might be screen-sharing.** When in doubt, summarize counts and shapes ("transcript has 47 segments across 2 speakers") rather than dumping the text.
-- **Don't run `--no-cache` reflexively.** The cache exists so we don't re-burn credits on unchanged segments. Only force regen when the user actually changed voice settings, the model, or wants a different take of the same line.
+- **Don't run `--no-cache` reflexively.** The cache exists so re-runs after small edits are nearly instant. Only force regen when the user actually changed voice settings, the model, or wants a different take of the same line.
 - **Don't auto-pick voices** unless explicitly asked. Casting matters; the user's choice is part of the creative work.
 - **Don't write to MEMORY.md** about specific transcript content, voice IDs paired to people, or any project specifics that include PII. General preferences only.
 
