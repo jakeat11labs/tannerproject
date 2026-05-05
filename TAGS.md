@@ -21,7 +21,7 @@ Drop these `[bracketed]` tags into transcript lines to direct delivery. The mode
 [sarcastic]   [curious]   [excited]   [crying]   [snorts]   [mischievously]
 [happy]   [sad]   [angry]   [annoyed]   [appalled]   [thoughtful]   [surprised]
 [chuckles]   [giggling]
-[short pause]   [long pause]
+[pause]   [short pause]   [long pause]
 ```
 
 ### Sound effects
