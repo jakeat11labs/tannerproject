@@ -19,6 +19,13 @@ Friends new to coding, new to Claude Code, and curious about generative audio. *
 
 If you get stuck, just tell Claude what's happening and it'll help you. It's been pre-briefed.
 
+## See how this was built (recommended reading)
+
+This whole project was built in a single Claude Code session. Two docs let you see exactly how:
+
+- **[CONVERSATION.md](./CONVERSATION.md)** — narrative, teaching-document version. Walks through the decisions, tool switches, and lessons learned. **Start here** if you're new to Claude Code.
+- **[CONVERSATION-RAW.md](./CONVERSATION-RAW.md)** — verbatim transcript of every user message, assistant reply, and tool call. **Read this** if you want to see what an AI-driven dev session actually looks like end-to-end.
+
 ---
 
 ## What you need before you start
@@ -244,7 +251,7 @@ The cache is keyed by content + voice + settings, so changing the voice already 
 
 ## How it works (under the hood)
 
-If you're curious about what the code is doing — **[CONVERSATION.md](./CONVERSATION.md)** is a narrative of how this whole project was built in a single Claude Code session. It's a teaching document. Skim it to see how someone goes from "I have an idea" → "working tool" with an AI agent.
+If you're curious about what the code is doing — **[CONVERSATION.md](./CONVERSATION.md)** is the narrative of how this whole project was built in a single Claude Code session, and **[CONVERSATION-RAW.md](./CONVERSATION-RAW.md)** is the verbatim transcript. Skim either to see how someone goes from "I have an idea" → "working tool" with an AI agent.
 
 Architecture in 60 seconds:
 
@@ -274,4 +281,4 @@ MIT. Do whatever you want with it.
 
 ## Credits
 
-Built collaboratively in a Claude Code session — see `CONVERSATION.md` for the full walkthrough.
+Built collaboratively in a Claude Code session — see [CONVERSATION.md](./CONVERSATION.md) (narrative) and [CONVERSATION-RAW.md](./CONVERSATION-RAW.md) (verbatim) for the full walkthrough.
