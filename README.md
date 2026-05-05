@@ -20,13 +20,23 @@ One command in. One MP3 out. No web UI, no manual stitching.
 
 Three samples generated from the same transcript ([`transcripts/cs-interview-example.txt`](./transcripts/cs-interview-example.txt) — a synthesized customer-success behavioral interview, ~2 minutes, two speakers with v3 expressive tags). Click to play in your browser:
 
-| Sample | Mode | Model | Duration | Why it sounds the way it does |
-| --- | --- | --- | --- | --- |
-| 🟢 [**C — Segment + v4**](https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/C-segment-v4.mp3) _(default, recommended)_ | segment | `eleven_v4` | 2:11 | Newest model, tighter pacing, expressive without needing dialogue mode |
-| 🔵 [**A — Dialogue + v3**](https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/A-dialogue-v3.mp3) | dialogue | `eleven_v3` | 2:32 | Whole conversation generated as one performance — real turn-taking, prosody match |
-| ⚪ [**B — Segment + v3**](https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/B-segment-v3.mp3) | segment | `eleven_v3` | 2:28 | Original v3 baseline, per-line stitched. Comparison reference. |
+### 🟢 C — Segment + v4 _(default, recommended)_
 
-> 💡 Click any sample above to open it in a new tab — your browser's built-in audio player will play it (no download required).
+Mode: `segment` · Model: `eleven_v4` · Duration: 2:11 · Newest model, tighter pacing, expressive without needing dialogue mode.
+
+[A-dialogue-v3.mp3](https://github.com/user-attachments/files/27419388/A-dialogue-v3.mp3)
+[B-segment-v3.mp3](https://github.com/user-attachments/files/27419386/B-segment-v3.mp3)
+[C-segment-v4.mp3](https://github.com/user-attachments/files/27419387/C-segment-v4.mp3)
+
+### 🔵 A — Dialogue + v3
+
+Mode: `dialogue` · Model: `eleven_v3` · Duration: 2:32 · Whole conversation generated as one performance — real turn-taking, prosody match.
+
+### ⚪ B — Segment + v3
+
+Mode: `segment` · Model: `eleven_v3` · Duration: 2:28 · Original v3 baseline, per-line stitched. Comparison reference.
+
+> 💡 If the players don't render inline above, click any link to open in your browser's native audio player.
 
 **Recommended listen order:** B → A → C. B is the baseline; A shows the dialogue-API upgrade; C shows what v4 does on top of segment-mode stitching.
 
