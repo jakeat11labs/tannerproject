@@ -1,101 +1,142 @@
-# Transcript → Two-Voice Interview Audio
+# 🎙️ Two-Voice Interview Generator
 
-Turn a timestamped two-speaker interview transcript into one MP3 that sounds like the two people are actually talking — using ElevenLabs v3 with expressive `[laughs]`, `[whispers]`, `[curious]` audio tags.
-
-You write something like:
+> Turn a timestamped two-speaker transcript into one MP3 that **sounds like the interview actually happened** — using ElevenLabs v3 with expressive `[laughs]`, `[whispers]`, `[curious]` audio tags.
 
 ```
-[00:00:00] Tanner: [excited] Welcome to the show!
-[00:00:04] Guest: [chuckles] Thanks for having me.
+INPUT (transcripts/sample.txt)              OUTPUT (out/sample.mp3)
+─────────────────────────────────           ───────────────────────────
+[00:00:00] Tanner: [excited] Welcome!  ──►  🔊 Voice A says it, excited
+[00:00:04] Guest: [chuckles] Thanks!   ──►  🔊 Voice B chuckles, replies
+[00:00:09] Tanner: [curious] So...     ──►  🔊 …stitched into one MP3
 ```
 
-You run one command. You get an MP3 of two distinct voices having that exact conversation, with natural pacing.
+One command in. One MP3 out. No web UI, no manual stitching.
 
 ---
 
-## Who this is for
+## 📬 Hey Tanner — start here
 
-Friends new to coding, new to Claude Code, and curious about generative audio. **You don't need to understand any of the code to use this.** Claude Code will walk you through the whole thing — that's literally what `CLAUDE.md` in this repo tells it to do.
+This is the prototype Jake walked you through on the call. It's the **reenactment** half of your interviewer-training pipeline:
 
-If you get stuck, just tell Claude what's happening and it'll help you. It's been pre-briefed.
-
-## See how this was built (recommended reading)
-
-This whole project was built in a single Claude Code session. Two docs let you see exactly how:
-
-- **[CONVERSATION.md](./CONVERSATION.md)** — narrative, teaching-document version. Walks through the decisions, tool switches, and lessons learned. **Start here** if you're new to Claude Code.
-- **[CONVERSATION-RAW.md](./CONVERSATION-RAW.md)** — verbatim transcript of every user message, assistant reply, and tool call. **Read this** if you want to see what an AI-driven dev session actually looks like end-to-end.
-
----
-
-## What you need before you start
-
-1. **A Mac (or Linux box)** — these instructions assume macOS. Windows works but the commands are slightly different.
-2. **[Claude Code](https://docs.claude.com/en/docs/claude-code)** installed and working in your terminal.
-3. **[Node.js](https://nodejs.org/) 20 or newer.** Check with `node --version`. If you need to install: `brew install node`.
-4. **[ffmpeg](https://ffmpeg.org/).** Check with `ffmpeg -version`. Install with `brew install ffmpeg`.
-5. **[GitHub CLI](https://cli.github.com/)** if you want to clone with `gh`. Optional — you can use plain git too.
-6. **An [ElevenLabs](https://elevenlabs.io) account** with an API key.
-
-If you're missing any of these, tell Claude what you're missing and it'll help you install them.
-
----
-
-## Getting set up — step by step
-
-### 1. Clone this repo
-
-```bash
-gh repo clone <username>/<repo-name>
-cd <repo-name>
+```
+Your real interview MP4 + transcript
+            │
+            ▼
+   [Step 1] PII sanitization ──► (your existing Claude skill)
+            │
+            ▼
+   sanitized transcript with timestamps
+            │
+            ▼
+   [Step 2] THIS PROJECT ─────► reenacted MP3 with two distinct voices
+            │
+            ▼
+   Listenable training material — what good vs. bad interviews sound like
 ```
 
-(Or use the green "Code" button on GitHub and download the zip.)
+You don't need to read or write any code to use this. **`CLAUDE.md` in this repo is a script for Claude Code** — it tells Claude how to walk you through setup, ask you for the right things in the right order, and debug when something goes sideways. Just clone the repo, open Claude Code, and say _"hey, walk me through this."_
 
-### 2. Install the ElevenLabs Claude Code skills
+When you get stuck, tell Claude what you're seeing. It's been pre-briefed.
 
-This is the magic that lets Claude Code talk to ElevenLabs directly — search voices, generate previews, set up your API key, all of it. Highly recommended.
+---
 
-In your terminal, in this project folder, run:
+## 🗺️ Your path today
+
+| Step | What you do | Time |
+| --- | --- | --- |
+| 1 | Install the prerequisites (Node, ffmpeg, Claude Code) | 5 min |
+| 2 | Install the ElevenLabs skills with `npx skills add` | 2 min |
+| 3 | Clone this repo and open it in Claude Code | 1 min |
+| 4 | Tell Claude to walk you through it | 5 min |
+| 5 | Listen to your first generated interview | 30 sec |
+
+If anything in step 1 isn't installed, Claude will tell you what to run.
+
+---
+
+## 🧰 Prerequisites
+
+| Tool | Check it's installed | If not… |
+| --- | --- | --- |
+| **Node.js 20+** | `node --version` | `brew install node` |
+| **ffmpeg** | `ffmpeg -version` | `brew install ffmpeg` |
+| **Claude Code** | `claude --version` | [docs.claude.com](https://docs.claude.com/en/docs/claude-code) |
+| **GitHub CLI** _(optional)_ | `gh --version` | `brew install gh` |
+| **ElevenLabs API key** | from [elevenlabs.io/app/settings/api-keys](https://elevenlabs.io/app/settings/api-keys) | make sure it has **TTS** + **Voices: read** scopes |
+
+> 💡 **API key tip from the call:** for personal projects on your laptop, one open key is fine. For anything that ships, scope keys per-project. Jake's words.
+
+---
+
+## 1️⃣ Install the ElevenLabs skills
+
+This is what plugs ElevenLabs into Claude Code — voice search, TTS, API key setup, all of it. You only do this **once** for your whole machine.
+
+In your terminal (anywhere):
 
 ```bash
 npx skills add https://github.com/elevenlabs/skills
 ```
 
-You'll be asked a few questions. **Answer them like this:**
+A wizard pops up. Answer it like this:
 
-| Question | Answer |
-| --- | --- |
-| Which skills do you want to install? | **Select ALL of them.** Use the spacebar to check each, then Enter. |
-| Which coding agent? | **Claude Code** |
-| Install scope? | **Global** (NOT project) |
-| Install method? | **Symlink** |
+| Prompt | Your answer | Why |
+| --- | --- | --- |
+| Which skills? | **Select ALL** _(spacebar to check, then Enter)_ | They're small, this project uses several |
+| Coding agent? | **Claude Code** | That's what you're using |
+| Scope? | **Global** | Available in every project, not just this one |
+| Method? | **Symlink** | Auto-update when ElevenLabs ships changes |
 
-After this finishes, restart Claude Code so it picks up the new skills.
+After it finishes, **restart Claude Code** so it picks up the new skills.
 
-Why these answers?
-- **All skills** because this project uses several of them (text-to-speech, voice search, API key setup, etc.) and they're all small.
-- **Claude Code** because that's what you're using.
-- **Global** so you can use these skills in any project, not just this one.
-- **Symlink** so when ElevenLabs updates the skills, you get the updates automatically without re-installing.
+> ✅ Verify it worked: in Claude Code, type `/text-to-speech` — it should appear as a skill suggestion.
 
-### 3. Open the project in Claude Code
+---
+
+## 2️⃣ Get the project
+
+```bash
+gh repo clone jakeat11labs/tannerproject
+cd tannerproject
+```
+
+(Or click the green **Code** button on GitHub and download the zip.)
+
+---
+
+## 3️⃣ Let Claude drive (recommended)
+
+Open the project in Claude Code:
 
 ```bash
 claude
 ```
 
-Just say something like:
+Then say something like:
 
-> "Hey, I just cloned this repo. Can you walk me through setting it up?"
+> _"I just cloned this repo. Walk me through setting it up."_
 
-Claude will detect what's missing (API key, voice IDs, dependencies) and ask you for each piece in order. You don't need to know any of the commands yourself.
+Claude will:
 
-If you'd rather do it manually, the next sections cover the same steps.
+1. Detect what's missing (API key, voice IDs, dependencies)
+2. **Ask you for each piece**, one at a time
+3. Run the script when you're ready
+4. Open the MP3 for you when it's done
+
+That's it. You don't need to touch the manual setup below unless you want to.
+
+> 🎬 **Plan-mode tip from the call:** before Claude does anything big, hit **Shift+Tab** to flip into _plan mode_. It'll think, then show you a full plan before touching any files. You approve it, and only then does it run. This is how Jake set up the project in the first place — see [`CONVERSATION.md`](./CONVERSATION.md).
+
+> ⏪ **Undo tip from the call:** hit **Esc Esc** (escape twice) to scroll through your previous messages. Click one and Claude will revert all its changes back to that point. Lifesaver when something goes sideways.
 
 ---
 
-## Manual setup (if you'd rather not let Claude drive)
+## 3️⃣ (alternative) Manual setup
+
+If you'd rather drive yourself:
+
+<details>
+<summary><b>Click to expand manual steps</b></summary>
 
 ### Install dependencies
 
@@ -103,157 +144,177 @@ If you'd rather do it manually, the next sections cover the same steps.
 npm install
 ```
 
-### Set your ElevenLabs API key
+### Set your API key
 
-Create a file called `.env` in the project root with:
+Create `.env` in the project root:
 
 ```
 ELEVENLABS_API_KEY=sk_your_key_here
 ```
 
-Get your key at: https://elevenlabs.io/app/settings/api-keys
-
-`.env` is gitignored — it will never be committed.
+`.env` is gitignored — it will never get committed.
 
 ### Pick two voices
 
-Browse https://elevenlabs.io/app/voice-library and pick two voices that contrast nicely (e.g. one warm + one crisp, or one masculine + one feminine). For each voice, click it, then click the **ID** button to copy the voice ID. It'll look like `21m00Tcm4TlvDq8ikWAM`.
+Browse [elevenlabs.io/app/voice-library](https://elevenlabs.io/app/voice-library) and pick two voices that contrast nicely (one warm + one crisp, one masc + one fem, etc.). Click each voice → click the **ID** button to copy. IDs look like `21m00Tcm4TlvDq8ikWAM`.
 
-### Configure the speaker → voice mapping
-
-Copy the example config:
+### Configure speakers → voices
 
 ```bash
 cp voices.config.example.json voices.config.json
 ```
 
-Open `voices.config.json` and replace the placeholders. The keys (`Speaker A`, `Speaker B`) need to match exactly what's in your transcript file. So if your transcript says `[00:00:00] Tanner:` then your config key is `Tanner`.
+Edit `voices.config.json`. **The keys must match the speaker names in your transcript exactly.**
 
-```json
+```jsonc
 {
+  // Full form — control expressiveness per speaker
   "Tanner": {
     "voiceId": "21m00Tcm4TlvDq8ikWAM",
     "voiceSettings": {
-      "stability": 0.4,
+      "stability": 0.4,        // 0.3 = expressive, 0.5 = balanced, 0.75+ = stable but ignores tags
       "similarityBoost": 0.75,
       "style": 0.4,
       "useSpeakerBoost": true
     }
   },
+  // Short form — just the voice ID, defaults for everything else
   "Guest": "AZnzlk1XvdvUeBnXmlld"
 }
 ```
 
-(Either format works — full object with settings, or just a plain string with the voice ID.)
-
 ### Drop in a transcript
 
-Put a `.txt` file in `transcripts/` formatted like this:
+Put a `.txt` file in `transcripts/` formatted as:
 
 ```
 [00:00:00] Tanner: [excited] Welcome to the show!
 [00:00:05] Guest: [chuckles] Thanks for having me.
-[00:00:09] Tanner: [curious] Let's start with the basics.
 ```
 
-A working example is already there: `transcripts/sample.txt`.
+A working sample is already there: `transcripts/sample.txt`.
 
-### Generate the audio
+### Generate
 
 ```bash
 node src/index.js transcripts/sample.txt
-```
-
-Or use the npm script:
-
-```bash
+# or
 npm run generate -- transcripts/sample.txt
 ```
 
-You'll see something like:
+Output lands at `out/<filename>.mp3`. Open with `open out/sample.mp3`.
 
-```
-Transcript: /path/to/transcripts/sample.txt
-Segments: 7 (Tanner, Guest)
-Cache: /path/to/.cache
-  [1/7] Tanner: "[excited] Welcome to the show!" (tts)
-  [2/7] Guest: "[chuckles] Thanks for having me." (tts)
-  ...
-Assembling 7 clips → /path/to/out/sample.mp3 (cache hits: 0/7)
-Done: /path/to/out/sample.mp3
-```
-
-Then:
-
-```bash
-open out/sample.mp3
-```
+</details>
 
 ---
 
-## Writing better transcripts (the fun part)
+## 🎭 Writing expressive lines
 
-The `[bracketed]` tags are how you direct delivery. They're voice-dependent — a calm voice won't shout convincingly — so experiment.
-
-The full reference is in **[TAGS.md](./TAGS.md)**. Quick samples:
+The `[bracketed]` tags are how you direct delivery. Drop them right before (or right after) the line they affect.
 
 | Want… | Use… |
 | --- | --- |
-| Laughter | `[laughs]`, `[chuckles]`, `[giggling]` |
+| Laughter | `[laughs]` `[chuckles]` `[giggling]` |
 | Whisper | `[whispers]` |
-| Pause | `…` (ellipses), `—` (em dash), or `[short pause]` / `[long pause]` |
-| Emphasis | CAPITAL LETTERS in the word: `It was a VERY long day.` |
+| Pause | `…` (ellipses) · `—` (em dash) · `[short pause]` · `[long pause]` |
+| Emphasis | **CAPS** in the word: `It was a VERY long day.` |
 | Curiosity | `[curious]` |
-| Sad / reflective | `[sad]`, `[crying]`, `[sighs]`, `[thoughtful]` |
+| Sad / reflective | `[sad]` `[crying]` `[sighs]` `[thoughtful]` |
 | Excited | `[excited]` |
 | Sarcasm | `[sarcastic]` |
-| Accent | `[strong French accent]`, `[strong British accent]`, etc. |
+| Accent | `[strong French accent]` `[strong British accent]` |
 
-Tags go right before the line they affect:
+**Full reference:** **[`TAGS.md`](./TAGS.md)** — every official tag, the rules for combining them, and a vibe → tag-combo cheatsheet for interview moods.
 
-```
-[00:00:00] Tanner: [excited] You won't BELIEVE what happened today!
-```
+> ⚠️ **Voice-dependent.** A meditative voice won't `[shout]` convincingly. A hyped voice won't `[whisper]` well. Pick voices whose training samples cover the emotional range you want.
 
-Or right after, for reactions:
-
-```
-[00:00:00] Guest: It was just… insane. [sighs]
-```
+> ⚠️ **v3 does NOT support `<break time="x.xs"/>`.** Use ellipses, em dashes, or `[short pause]` / `[long pause]` for pauses.
 
 ---
 
-## Troubleshooting
+## 🧪 Testing tip from the call
 
-**"`ELEVENLABS_API_KEY is not set`"**
-Your `.env` file is missing or doesn't have the key in it. Check it exists in the project root with `cat .env`.
+When you generate a clip, **run it 3-4 times with the same script.** Each run will sound slightly different — different inflection, different pacing, occasionally a weird hallucination. This is normal for v3 expressive. Pick the take you like best.
 
-**"`voice config not found at …`"**
+Re-runs are cheap because of the cache (next section), but if you want to force a fresh take:
+
+```bash
+node src/index.js transcripts/your-file.txt --no-cache
+```
+
+You can also narrow this down: take a 30-min interview, cut it to a **2-minute test snippet**, and iterate on tags + voices on the snippet before generating the full thing.
+
+---
+
+## 💾 The cache (why re-runs are fast)
+
+Every generated clip lives in `.cache/`, keyed by `voiceId + model + voiceSettings + text`. So if you change one line, only that one line re-generates. The other 50 segments come from cache instantly — no API credits burned.
+
+| To… | Do this |
+| --- | --- |
+| See cache hits | Just run normally — it logs `(cache)` vs `(tts)` per segment |
+| Force regeneration of everything | `node src/index.js … --no-cache` |
+| Clear the cache | `rm -rf .cache` (it'll repopulate next run) |
+
+---
+
+## 🩹 Troubleshooting
+
+<details>
+<summary><b>"<code>ELEVENLABS_API_KEY is not set</code>"</b></summary>
+
+`.env` is missing or doesn't have the key. Run `cat .env` to verify. If empty, recreate with `echo 'ELEVENLABS_API_KEY=sk_...' > .env`.
+
+</details>
+
+<details>
+<summary><b>"<code>voice config not found at …</code>"</b></summary>
+
 You haven't created `voices.config.json` yet. Run `cp voices.config.example.json voices.config.json` and edit it.
 
-**"`voice config missing valid voice IDs for: …`"**
-You still have `REPLACE_WITH_VOICE_ID` in your config, or the speaker name in your config doesn't match the speaker name in your transcript. They have to match exactly — case-sensitive.
+</details>
 
-**The output sounds robotic / no expression**
-- Make sure `voiceSettings.stability` is around `0.3–0.5`. Higher = more stable but ignores tags. Lower = more expressive but more variable.
-- Make sure you're on `eleven_v3` — that's the default. If you've overridden the model to `eleven_multilingual_v2`, the `[brackets]` will be ignored.
+<details>
+<summary><b>"<code>voice config missing valid voice IDs for: …</code>"</b></summary>
 
-**The model spits back the literal `[brackets]` as words**
-You're not on `eleven_v3`. If you have alpha access, leave `ELEVEN_MODEL_ID` unset. If you don't, the brackets won't work — request alpha access at https://help.elevenlabs.io/hc/en-us/articles/35869066075921 .
+Either you still have `REPLACE_WITH_VOICE_ID` in your config, or the speaker name in the config doesn't match the speaker name in your transcript. **Names must match exactly — case-sensitive, including spaces.**
 
-**"`ffmpeg: command not found`"**
-Run `brew install ffmpeg` (macOS) or your distro's equivalent.
+</details>
 
-**Re-running is slow / I changed a voice and want to regenerate**
-The cache is keyed by content + voice + settings, so changing the voice already triggers a regen for that speaker. To force a full regen, run with `--no-cache` or just delete the `.cache/` folder.
+<details>
+<summary><b>The output sounds robotic / no expression</b></summary>
+
+- Drop `voiceSettings.stability` to `0.3` or `0.4`. Higher = more stable but **ignores tags**.
+- Confirm you're on `eleven_v3`. The default in this project is v3 — but if you set `ELEVEN_MODEL_ID=eleven_multilingual_v2` somewhere, brackets get read as words.
+
+</details>
+
+<details>
+<summary><b>The model reads <code>[brackets]</code> as words</b></summary>
+
+You're not on `eleven_v3`. If your account has v3 alpha access, leave `ELEVEN_MODEL_ID` unset. If not, request access at [help.elevenlabs.io](https://help.elevenlabs.io/hc/en-us/articles/35869066075921). As a fallback, run with `ELEVEN_MODEL_ID=eleven_multilingual_v2` — works without v3 access but the tags won't render.
+
+</details>
+
+<details>
+<summary><b>Voice ignoring tags even on v3</b></summary>
+
+Stability is too high. Lower `voiceSettings.stability` for that speaker to ~0.3 and run with `--no-cache` (or `rm -rf .cache`).
+
+</details>
+
+<details>
+<summary><b>"<code>ffmpeg: command not found</code>"</b></summary>
+
+`brew install ffmpeg` (macOS) or your distro's equivalent.
+
+</details>
 
 ---
 
-## How it works (under the hood)
+## 🔬 Under the hood
 
-If you're curious about what the code is doing — **[CONVERSATION.md](./CONVERSATION.md)** is the narrative of how this whole project was built in a single Claude Code session, and **[CONVERSATION-RAW.md](./CONVERSATION-RAW.md)** is the verbatim transcript. Skim either to see how someone goes from "I have an idea" → "working tool" with an AI agent.
-
-Architecture in 60 seconds:
+Four files. ~250 lines total. Read them in this order:
 
 ```
 transcripts/sample.txt
@@ -261,24 +322,58 @@ transcripts/sample.txt
         ▼
    src/parse.js  ────►  segments: [{ speaker, text, ts }, …]
         │
-        ▼
-   src/tts.js  ──────►  one MP3 per segment via ElevenLabs API
-        │              (cached by content hash so re-runs are free)
-        ▼
-   src/assemble.js  ──►  ffmpeg concat with silence padding
-        │              (250ms same-speaker, 500ms speaker switch)
+        ▼                   one MP3 per segment via ElevenLabs API
+   src/tts.js  ──────►      cached by content hash (re-runs are free)
+        │
+        ▼                   ffmpeg concat with silence padding
+   src/assemble.js  ──►     250ms same-speaker, 500ms speaker switch
+        │
         ▼
    out/sample.mp3
 ```
 
-Four files, ~250 lines total. Read them in that order.
+Tying it all together: **`src/index.js`** (the CLI).
 
 ---
 
-## License
+## 📚 See exactly how this was built
+
+This whole project went from "I have an idea" to "working tool" in one Claude Code session. Two docs let you replay it:
+
+- **[`CONVERSATION.md`](./CONVERSATION.md)** — narrative version with lessons learned. **Start here.**
+- **[`CONVERSATION-RAW.md`](./CONVERSATION-RAW.md)** — verbatim transcript of every prompt, every reply, every tool call. **Read this** when you want to see what an AI-driven dev session actually looks like end-to-end.
+- **[`CLAUDE.md`](./CLAUDE.md)** — the instructions Claude Code reads when you open this repo. Includes a state-detection routine (deps? key? config? transcripts? ffmpeg?) and a troubleshooting playbook so the agent can drive your setup.
+- **[`TAGS.md`](./TAGS.md)** — full ElevenLabs v3 audio-tag reference with a vibe → combo cheatsheet for interview moods.
+
+---
+
+## 📋 Quick command reference
+
+```bash
+# Setup (once)
+npx skills add https://github.com/elevenlabs/skills          # install ElevenLabs skills globally
+gh repo clone jakeat11labs/tannerproject && cd tannerproject # clone this repo
+npm install                                                   # install deps
+cp voices.config.example.json voices.config.json             # create your voice config
+echo 'ELEVENLABS_API_KEY=sk_your_key' > .env                  # set your API key
+
+# Generate
+node src/index.js transcripts/sample.txt                     # generate the sample
+node src/index.js transcripts/your-file.txt -o foo.mp3       # custom output path
+node src/index.js transcripts/your-file.txt --no-cache       # force fresh take
+
+# Listen
+open out/sample.mp3
+```
+
+---
+
+## 📜 License
 
 MIT. Do whatever you want with it.
 
-## Credits
+## 💛 Credits
 
-Built collaboratively in a Claude Code session — see [CONVERSATION.md](./CONVERSATION.md) (narrative) and [CONVERSATION-RAW.md](./CONVERSATION-RAW.md) (verbatim) for the full walkthrough.
+Built collaboratively in a Claude Code session — see [`CONVERSATION.md`](./CONVERSATION.md) for the narrative and [`CONVERSATION-RAW.md`](./CONVERSATION-RAW.md) for the verbatim transcript.
+
+For Tanner. You got this. 🎉
