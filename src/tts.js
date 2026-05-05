@@ -39,7 +39,7 @@ export async function generateClip({
   text,
   voiceId,
   voiceSettings,
-  modelId = process.env.ELEVEN_MODEL_ID || 'eleven_v3',
+  modelId = process.env.ELEVEN_MODEL_ID || 'eleven_v4',
   cacheDir,
   noCache = false,
 }) {

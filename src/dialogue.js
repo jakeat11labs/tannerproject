@@ -69,10 +69,14 @@ async function callDialogueApi({ inputs, modelId, seed }) {
   return Buffer.from(await res.arrayBuffer());
 }
 
+// The Text-to-Dialogue endpoint requires eleven_v3 specifically — v4/v4_hq are TTS-only.
+// We deliberately do NOT honor ELEVEN_MODEL_ID here; that env var only applies to segment mode.
+const DIALOGUE_MODEL_ID = 'eleven_v3';
+
 export async function generateDialogueChunk({
   segments,
   voiceMap,
-  modelId = process.env.ELEVEN_MODEL_ID || 'eleven_v3',
+  modelId = DIALOGUE_MODEL_ID,
   cacheDir,
   noCache = false,
   seed,

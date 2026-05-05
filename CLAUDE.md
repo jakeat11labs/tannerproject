@@ -106,24 +106,38 @@ Don't auto-pick voices unless they explicitly ask. Their casting choice matters.
 
 ## Modes (`--mode auto|dialogue|segment`)
 
-The CLI now ships three modes. Default is `auto`.
+The CLI ships three modes. Default is `auto`.
 
-- **`dialogue`** — sends each ≤1900-char chunk to `/v1/text-to-dialogue`. The v3 model generates the whole exchange as one coherent performance: real turn-taking, prosody matching, interruptions. **Most natural.** Requires v3 alpha access. Coarser cache (per chunk, ~10-15 segments).
-- **`segment`** — generates each line individually via `/v1/text-to-speech`, then concats. Per-segment `voiceSettings` honored. Finest-grained cache. Less natural conversation flow but works on any account.
-- **`auto`** — try dialogue, automatically fall back to segment if the dialogue endpoint returns a v3 access error (4xx with `model_not_found` / permission / alpha hints). The fallback is built into `src/index.js` (see `isV3AccessError`); the user sees a warning + a link to request alpha access, then segment mode runs. **You don't need to handle this manually** — the script does it.
+- **`segment`** — generates each line individually via `/v1/text-to-speech`, then concats. Per-segment `voiceSettings` honored. Finest-grained cache. **Defaults to `eleven_v4`** (newest expressive model, no alpha gate, tighter pacing than v3). Override via `ELEVEN_MODEL_ID` env var. **This is the project's recommended default path** — it sounds confident and natural without needing the dialogue endpoint.
+- **`dialogue`** — sends each ≤1900-char chunk to `/v1/text-to-dialogue`. Generates the whole exchange as one coherent performance: real turn-taking, prosody matching, interruptions. Coarser cache (per chunk). **Hard-pinned to `eleven_v3`** — the dialogue endpoint requires v3 specifically; v4 is TTS-only. `ELEVEN_MODEL_ID` does not apply here.
+- **`auto`** — try dialogue (v3) first, automatically fall back to segment (v4) if the dialogue endpoint returns a v3 access error (4xx / `model_not_found` / permission / alpha hints). Fallback is built into `src/index.js` (`isV3AccessError`). User sees a warning + the alpha-access link, then segment mode runs. **You don't need to handle this manually.**
 
-When the user asks "which mode should I use?" — recommend `auto` (the default). Mention the trade-off: dialogue needs v3 alpha but sounds noticeably more like a real conversation; segment works without v3 alpha and gives per-line `voiceSettings` control.
+When the user asks "which mode should I use?" — recommend `auto` (the default). Mention the trade-off: dialogue captures cross-speaker prosody (e.g. one laugh answering another) but the cache is per-chunk so iteration is slower; segment + v4 gives per-line voiceSettings and finest-grain caching with audio quality that's nearly as good in most cases.
 
 If the user wants to **A/B compare**, suggest:
 
 ```bash
 node src/index.js transcripts/<file>.txt --mode dialogue -o out/dialogue.mp3
-node src/index.js transcripts/<file>.txt --mode segment  -o out/segment.mp3
+node src/index.js transcripts/<file>.txt --mode segment  -o out/segment-v4.mp3
+ELEVEN_MODEL_ID=eleven_v3 node src/index.js transcripts/<file>.txt --mode segment -o out/segment-v3.mp3
 ```
 
-Diff is most obvious on reactive lines (laughs answering laughs, interruptions, tonal shifts).
+The repo ships three pre-rendered samples in `samples/` (A: dialogue+v3, B: segment+v3, C: segment+v4) generated from `transcripts/cs-interview-example.txt` so the user can listen first.
 
 If the user already attempted dialogue mode and got a permission error in `auto`, **don't suggest re-trying dialogue on every subsequent run** — they need to request alpha access first. Default to `--mode segment` until they confirm access landed.
+
+## Model selection (segment mode only)
+
+Segment mode honors `ELEVEN_MODEL_ID`. Available models in order of preference for expressive interview content:
+
+| Model | Default? | Notes |
+| --- | --- | --- |
+| `eleven_v4` | ✅ | Newest expressive model, supports all audio tags, tighter pacing. **Project default.** |
+| `eleven_v4_hq` | | Higher-quality v4 variant. Slightly slower. Comparable in our testing. |
+| `eleven_v3` | | Used by dialogue endpoint. Looser pacing than v4. |
+| `eleven_multilingual_v2` | | Pre-v3. **Audio tags NOT supported** — brackets get read aloud. Last-resort fallback only. |
+
+Per-account access varies. Use `mcp__ElevenLabs__list_models` (or `curl https://api.elevenlabs.io/v1/models -H "xi-api-key: $KEY"`) to confirm what's available on the user's account. v4 is generally available — no alpha gate.
 
 ## Testing patterns
 
@@ -204,7 +218,7 @@ Single-purpose CLI, six files in `src/`:
 - **Timing**: back-to-back with natural-pacing gaps (250 ms same speaker / 500 ms switch). Source timestamps are *not* used as absolute starts.
 - **Stack**: Node ≥ 20 (ESM, `"type": "module"`), `@elevenlabs/elevenlabs-js`, `dotenv`, ffmpeg via raw `child_process.spawn`.
 - **Voices**: each entry in `voices.config.json` is either a plain string `voice_id` OR `{ voiceId, voiceSettings: { stability, similarityBoost, style, useSpeakerBoost } }`. For expressive v3, use `stability` ~0.3–0.5. `voiceSettings` are part of the cache key.
-- **Default model**: `eleven_v3`. Override via `ELEVEN_MODEL_ID` env var.
+- **Default model**: `eleven_v4` for segment mode (override via `ELEVEN_MODEL_ID`). Dialogue mode is hard-pinned to `eleven_v3` (endpoint requirement). See "Model selection" above for tradeoffs.
 - **Output**: 128 kbps stereo MP3 at 44.1 kHz at `out/<basename>.mp3`.
 
 ## Caching
@@ -226,8 +240,10 @@ All clips are polished (silence trimmed + loudness normalized to -16 LUFS) befor
 - `transcripts/` — input files (`.txt`).
 - `out/` — final combined MP3s, gitignored.
 - `.cache/` — per-segment MP3s + silence clips, gitignored.
+- `samples/` — three pre-rendered sample MP3s (A/B/C from the cs-interview-example) committed to the repo so users can listen before running anything.
 - `TAGS.md` — Eleven v3 audio tag reference (committed).
 - `CONVERSATION.md` / `CONVERSATION-RAW.md` — narrative + verbatim of how this project was built.
+- `docs/RESEARCH-NATURAL-AUDIO.md` — research on how other projects do multi-voice TTS and why dialogue mode is the natural-sound win.
 
 ## When extending
 

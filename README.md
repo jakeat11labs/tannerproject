@@ -16,6 +16,22 @@ One command in. One MP3 out. No web UI, no manual stitching.
 
 ---
 
+## 🎧 Hear it for yourself
+
+Three samples generated from the same transcript ([`transcripts/cs-interview-example.txt`](./transcripts/cs-interview-example.txt) — a synthesized customer-success behavioral interview, ~2 minutes, two speakers with v3 expressive tags). Click to play in your browser:
+
+| Sample | Mode | Model | Duration | Why it sounds the way it does |
+| --- | --- | --- | --- | --- |
+| 🟢 [**C — Segment + v4**](./samples/C-segment-v4.mp3) _(default, recommended)_ | segment | `eleven_v4` | 2:11 | Newest model, tighter pacing, expressive without needing dialogue mode |
+| 🔵 [**A — Dialogue + v3**](./samples/A-dialogue-v3.mp3) | dialogue | `eleven_v3` | 2:32 | Whole conversation generated as one performance — real turn-taking, prosody match |
+| ⚪ [**B — Segment + v3**](./samples/B-segment-v3.mp3) | segment | `eleven_v3` | 2:28 | Original v3 baseline, per-line stitched. Comparison reference. |
+
+**Recommended listen order:** B → A → C. B is the baseline; A shows the dialogue-API upgrade; C shows what v4 does on top of segment-mode stitching.
+
+> **Bottom line:** v4 in segment mode is the project's new default — it sounds confident and natural without needing v3 alpha access for the Dialogue API. Dialogue mode (v3) is still available with `--mode dialogue` and is the right pick when you want the model to "hear" both speakers in one pass.
+
+---
+
 ## 📬 Hey Tanner — start here
 
 This is the prototype Jake walked you through on the call. It's the **reenactment** half of your interviewer-training pipeline:
@@ -212,29 +228,42 @@ Output lands at `out/<filename>.mp3`. Open with `open out/sample.mp3`.
 
 ## 🧠 Two ways to generate audio (modes)
 
-The big lever for **how natural the conversation sounds** is which API endpoint we use. There are three modes:
+Three modes are available. The **default** is `auto` — it tries dialogue first and falls back to segment + v4 if your account can't use the dialogue API. **Both paths sound great**; pick based on the tradeoff you want.
 
-| Mode | What it does | When to use |
-| --- | --- | --- |
-| **`auto`** _(default)_ | Tries `dialogue` first, falls back to `segment` if v3 alpha access isn't available. | Always. Just use this. |
-| **`dialogue`** | Sends each ≤1900-char chunk to ElevenLabs's `/text-to-dialogue` endpoint. The v3 model generates the whole exchange as one coherent performance — turn-taking, prosody matching across speakers, even interruptions. **Most natural.** | When you have v3 alpha access and want best quality. |
-| **`segment`** | Generates each speaker line individually, then ffmpeg-concats with silence between. Per-segment voice settings honored, finest-grained cache. **Less natural** but doesn't need v3 alpha. | When you don't have v3 access yet, or when you want per-segment control over `voiceSettings`. |
+| Mode | What it does | Default model | When to use |
+| --- | --- | --- | --- |
+| **`auto`** _(default)_ | Tries `dialogue` (v3) first, falls back to `segment` (v4) on access errors. | varies | Always. Just use this. |
+| **`segment`** | Generates each speaker line individually via `/v1/text-to-speech`, then ffmpeg-concats with silence padding. Per-segment `voiceSettings` honored, finest-grained cache. | **`eleven_v4`** | The recommended path. Newest model, tighter pacing, no v3 alpha required. |
+| **`dialogue`** | Sends each ≤1900-char chunk to `/v1/text-to-dialogue`. The v3 model generates the whole exchange as one coherent performance — real turn-taking and prosody matching across speakers. | `eleven_v3` _(endpoint requirement)_ | When you want the model to "hear" both speakers in one pass. Slightly slower iteration loop because the cache is per-chunk. |
 
 ```bash
 # Default (auto) — recommended
 node src/index.js transcripts/sample.txt
 
-# Force dialogue mode (bigger natural-sound win, requires v3 alpha)
+# Force segment + v4 (the default, explicit)
+node src/index.js transcripts/sample.txt --mode segment
+
+# Force dialogue mode (v3 only — endpoint requirement)
 node src/index.js transcripts/sample.txt --mode dialogue
 
-# Force segment mode (works without v3 alpha)
-node src/index.js transcripts/sample.txt --mode segment
+# Use a different model in segment mode
+ELEVEN_MODEL_ID=eleven_v4_hq node src/index.js transcripts/sample.txt --mode segment
+ELEVEN_MODEL_ID=eleven_v3    node src/index.js transcripts/sample.txt --mode segment
 
 # Deterministic generation (same seed = same audio across runs)
 node src/index.js transcripts/sample.txt --seed 42
 ```
 
-**About v3 alpha access:** Eleven v3 is in alpha — your account may not have access yet. In `auto` mode, if the dialogue endpoint returns a permission error, the script automatically falls back to `segment` mode, prints a warning with the access-request link, and proceeds. You'll still get audio, but the brackets will be less expressive. Request access at https://help.elevenlabs.io/hc/en-us/articles/35869066075921 .
+**Choosing a model for segment mode** (override with `ELEVEN_MODEL_ID` env var):
+
+| Model | Description | Default? |
+| --- | --- | --- |
+| **`eleven_v4`** | Newest expressive model. Tighter pacing, confident delivery, supports all v3 audio tags. | ✅ default |
+| `eleven_v4_hq` | Higher-quality variant of v4. Slightly slower, similar audio quality in our testing. | |
+| `eleven_v3` | The model the dialogue API uses. More leisurely pacing than v4. | |
+| `eleven_multilingual_v2` | Pre-v3 model. Audio tags **not** supported (brackets get read aloud). Useful only as a last-resort fallback. | |
+
+**About v3 alpha access:** the Dialogue API is v3-only. If your account can't use v3 yet, `auto` mode automatically falls back to segment + v4 (which is just as good for most uses). Request v3 access at https://help.elevenlabs.io/hc/en-us/articles/35869066075921 if you want dialogue mode.
 
 **Audio polish (both modes):** Every generated clip runs through an ffmpeg polish pass — leading/trailing silence trimming, EBU R128 loudness normalization to -16 LUFS (podcast standard), output at 192 kbps stereo MP3. This eliminates segment-to-segment volume jumps and dead air between turns.
 
