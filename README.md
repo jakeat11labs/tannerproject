@@ -22,21 +22,21 @@ Three samples generated from the same transcript ([`transcripts/cs-interview-exa
 
 ### 🟢 C — Segment + v4 _(default, recommended)_
 
-Mode: `segment` · Model: `eleven_v4` · Duration: 2:11 · Newest model, tighter pacing, expressive without needing dialogue mode.
+`segment` mode · `eleven_v4` · 2:11 · Newest model, tighter pacing, expressive without needing dialogue mode.
 
-[A-dialogue-v3.mp3](https://github.com/user-attachments/files/27419388/A-dialogue-v3.mp3)
-[B-segment-v3.mp3](https://github.com/user-attachments/files/27419386/B-segment-v3.mp3)
-[C-segment-v4.mp3](https://github.com/user-attachments/files/27419387/C-segment-v4.mp3)
+https://github.com/user-attachments/assets/c89584c2-8926-474e-b11c-71905b291fd0
 
 ### 🔵 A — Dialogue + v3
 
-Mode: `dialogue` · Model: `eleven_v3` · Duration: 2:32 · Whole conversation generated as one performance — real turn-taking, prosody match.
+`dialogue` mode · `eleven_v3` · 2:32 · Whole conversation generated as one performance — real turn-taking, prosody match.
+
+https://github.com/user-attachments/assets/7d4ecbb3-27c2-4df3-9d27-f9e1ba58f15a
 
 ### ⚪ B — Segment + v3
 
-Mode: `segment` · Model: `eleven_v3` · Duration: 2:28 · Original v3 baseline, per-line stitched. Comparison reference.
+`segment` mode · `eleven_v3` · 2:28 · Original v3 baseline, per-line stitched. Comparison reference.
 
-> 💡 If the players don't render inline above, click any link to open in your browser's native audio player.
+https://github.com/user-attachments/assets/1ce977bd-47fa-4868-a78f-a5d18af960f3
 
 **Recommended listen order:** B → A → C. B is the baseline; A shows the dialogue-API upgrade; C shows what v4 does on top of segment-mode stitching.
 
