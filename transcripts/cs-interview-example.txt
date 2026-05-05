@@ -1,0 +1,23 @@
+[00:00:00] Interviewer: [warm] Hey, thanks for jumping on with me today. How's your morning going?
+[00:00:05] Candidate: [laughs] Oh, you know, the usual chaos. But I'm excited to chat. Thanks for making the time.
+[00:00:12] Interviewer: Of course. Before we dive in — I lead the customer success team here. I'll run you through a few scenario-based questions, and then I'll save the last ten minutes for whatever you want to ask me. Sound good?
+[00:00:24] Candidate: Sounds great.
+[00:00:26] Interviewer: [curious] So — tell me about a time you had to push back on a customer who was asking for something you couldn't deliver.
+[00:00:34] Candidate: [thoughtful] Hmm. Yeah, I have a good one for this.
+So at my last role, we had this enterprise account — pretty big deal — and they were demanding a custom integration that, honestly, would've required us to rebuild half our product.
+[00:00:50] Interviewer: [laughs] Oh boy.
+[00:00:52] Candidate: Right? [chuckles] So my instinct was just to say "we'll see what we can do" — kick the can.
+But I'd seen what happens when we do that. The expectation just compounds.
+[00:01:05] Interviewer: [curious] So what did you do instead?
+[00:01:08] Candidate: I scheduled a call with their VP. And I went in with a really clear narrative. Here's what you're asking for, here's what it would take, here's why we're not going to do it, AND here's what we CAN do that solves the underlying problem.
+[00:01:24] Candidate: That last part was the key. I didn't just say no. I came with a counter-offer.
+[00:01:30] Interviewer: [impressed] That's good. How'd they take it?
+[00:01:33] Candidate: [laughs] Honestly? Better than I expected.
+The VP actually thanked me at the end of the call for being direct. He said the worst thing I could've done was string them along for three months.
+[00:01:47] Interviewer: [thoughtful] Yeah. That's exactly it. And the renewal?
+[00:01:51] Candidate: [happy] They renewed. And expanded, actually, the following quarter.
+[00:01:56] Interviewer: [excited] That's a great story. Okay — I'm going to push on this a little. What if the VP had said no, we want the custom integration or we walk?
+[00:02:07] Candidate: [thoughtful] Hmm. Real answer? I would've escalated to my own leadership.
+Because at that point it's not a CS decision anymore. It's a business decision — is this account worth a roadmap detour?
+[00:02:21] Candidate: I would've gone to my leadership with the same framing I gave the VP. Here's the ask, here's the cost, here's the alternative. So they could decide quickly.
+[00:02:32] Interviewer: [warm] Love that. Alright — let's switch gears.

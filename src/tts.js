@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import { join } from 'node:path';
 import { ElevenLabsClient } from '@elevenlabs/elevenlabs-js';
+import { polishClip, POLISH_VERSION } from './polish.js';
 
 let _client;
 function client() {
@@ -21,7 +22,7 @@ function client() {
 function cacheKey({ voiceId, modelId, text, voiceSettings }) {
   const settingsKey = voiceSettings ? JSON.stringify(voiceSettings) : '';
   return createHash('sha256')
-    .update(`${voiceId}|${modelId}|${settingsKey}|${text}`)
+    .update(`${voiceId}|${modelId}|${settingsKey}|${POLISH_VERSION}|${text}`)
     .digest('hex')
     .slice(0, 16);
 }
@@ -63,6 +64,9 @@ export async function generateClip({
 
   const buf = await streamToBuffer(audio);
   await fs.mkdir(cacheDir, { recursive: true });
-  await fs.writeFile(path, buf);
+  const rawPath = `${path}.raw.mp3`;
+  await fs.writeFile(rawPath, buf);
+  await polishClip(rawPath, path);
+  await fs.unlink(rawPath).catch(() => {});
   return { path, cached: false };
 }

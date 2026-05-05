@@ -210,6 +210,36 @@ Output lands at `out/<filename>.mp3`. Open with `open out/sample.mp3`.
 
 ---
 
+## 🧠 Two ways to generate audio (modes)
+
+The big lever for **how natural the conversation sounds** is which API endpoint we use. There are three modes:
+
+| Mode | What it does | When to use |
+| --- | --- | --- |
+| **`auto`** _(default)_ | Tries `dialogue` first, falls back to `segment` if v3 alpha access isn't available. | Always. Just use this. |
+| **`dialogue`** | Sends each ≤1900-char chunk to ElevenLabs's `/text-to-dialogue` endpoint. The v3 model generates the whole exchange as one coherent performance — turn-taking, prosody matching across speakers, even interruptions. **Most natural.** | When you have v3 alpha access and want best quality. |
+| **`segment`** | Generates each speaker line individually, then ffmpeg-concats with silence between. Per-segment voice settings honored, finest-grained cache. **Less natural** but doesn't need v3 alpha. | When you don't have v3 access yet, or when you want per-segment control over `voiceSettings`. |
+
+```bash
+# Default (auto) — recommended
+node src/index.js transcripts/sample.txt
+
+# Force dialogue mode (bigger natural-sound win, requires v3 alpha)
+node src/index.js transcripts/sample.txt --mode dialogue
+
+# Force segment mode (works without v3 alpha)
+node src/index.js transcripts/sample.txt --mode segment
+
+# Deterministic generation (same seed = same audio across runs)
+node src/index.js transcripts/sample.txt --seed 42
+```
+
+**About v3 alpha access:** Eleven v3 is in alpha — your account may not have access yet. In `auto` mode, if the dialogue endpoint returns a permission error, the script automatically falls back to `segment` mode, prints a warning with the access-request link, and proceeds. You'll still get audio, but the brackets will be less expressive. Request access at https://help.elevenlabs.io/hc/en-us/articles/35869066075921 .
+
+**Audio polish (both modes):** Every generated clip runs through an ffmpeg polish pass — leading/trailing silence trimming, EBU R128 loudness normalization to -16 LUFS (podcast standard), output at 192 kbps stereo MP3. This eliminates segment-to-segment volume jumps and dead air between turns.
+
+---
+
 ## 🎭 Writing expressive lines
 
 The `[bracketed]` tags are how you direct delivery. Drop them right before (or right after) the line they affect.
@@ -250,13 +280,17 @@ You can also narrow this down: take a 30-min interview, cut it to a **2-minute t
 
 ## 💾 The cache (why re-runs are fast)
 
-Every generated clip lives in `.cache/`, keyed by `voiceId + model + voiceSettings + text`. So if you change one line, only that one line re-generates. The other 50 segments come from cache instantly — no API credits burned.
+Every generated clip lives in `.cache/`. The cache splits by mode:
+
+- **`.cache/segments/`** — segment mode: keyed by `voiceId + model + voiceSettings + text` (per line). Edit one line → only that line re-generates.
+- **`.cache/dialogue/`** — dialogue mode: keyed by the entire chunk's inputs + voices + model + seed. Coarser-grained — editing one line within a chunk re-generates the whole chunk (~10-15 segments at once). Trade-off for the better naturalness.
 
 | To… | Do this |
 | --- | --- |
-| See cache hits | Just run normally — it logs `(cache)` vs `(tts)` per segment |
+| See cache hits | Just run normally — it logs `(cache)` vs `(tts)` / `(api)` per item |
 | Force regeneration of everything | `node src/index.js … --no-cache` |
-| Clear the cache | `rm -rf .cache` (it'll repopulate next run) |
+| Get a different take of the same script | `--no-cache` (or use a different `--seed`) |
+| Clear all caches | `rm -rf .cache` (it'll repopulate next run) |
 
 ---
 
@@ -312,29 +346,61 @@ Stability is too high. Lower `voiceSettings.stability` for that speaker to ~0.3 
 
 </details>
 
+<details>
+<summary><b>"Dialogue mode unavailable" warning, falling back to segment</b></summary>
+
+Your account doesn't have v3 alpha access yet. The script falls back automatically; audio still works but tags are less expressive. Request alpha access at https://help.elevenlabs.io/hc/en-us/articles/35869066075921 — usually approved within a few days. Or force segment mode anytime with `--mode segment`.
+
+</details>
+
+<details>
+<summary><b>I want to compare dialogue vs segment side-by-side</b></summary>
+
+```bash
+node src/index.js transcripts/your-file.txt --mode dialogue -o out/dialogue.mp3
+node src/index.js transcripts/your-file.txt --mode segment  -o out/segment.mp3
+```
+
+Listen to both. Dialogue should sound like one performance; segment should sound stitched together. The difference is most obvious on lines where one speaker reacts to the other (laughs, interruptions, tonal shifts).
+
+</details>
+
 ---
 
 ## 🔬 Under the hood
 
-Four files. ~250 lines total. Read them in this order:
+Six modules. ~500 lines total. Read in this order:
 
 ```
 transcripts/sample.txt
         │
         ▼
-   src/parse.js  ────►  segments: [{ speaker, text, ts }, …]
+   src/parse.js  ────────►  segments: [{ speaker, text, ts }, …]
         │
-        ▼                   one MP3 per segment via ElevenLabs API
-   src/tts.js  ──────►      cached by content hash (re-runs are free)
+        ├─── (mode: dialogue) ───►  src/dialogue.js
+        │                           ├─ chunkSegments()  (≤1900 chars/chunk)
+        │                           └─ POST /v1/text-to-dialogue per chunk
+        │                              one polished MP3 per chunk
         │
-        ▼                   ffmpeg concat with silence padding
-   src/assemble.js  ──►     250ms same-speaker, 500ms speaker switch
+        └─── (mode: segment)  ───►  src/tts.js
+                                    one polished MP3 per speaker line
+                                    via /v1/text-to-speech, cached by
+                                    voice+model+settings+text hash
         │
+        ▼ (every clip, both modes)
+   src/polish.js  ────────►  silence trim + loudnorm -16 LUFS + 192k bitrate
+        │
+        ▼
+   src/assemble.js  ──────►  ffmpeg concat with silence padding
+        │                    (250ms same-speaker, 500ms switch in segment mode;
+        │                     500ms between chunks in dialogue mode)
         ▼
    out/sample.mp3
 ```
 
-Tying it all together: **`src/index.js`** (the CLI).
+Tying it all together: **`src/index.js`** (the CLI orchestrator with `--mode auto|dialogue|segment` and the auto-fallback logic).
+
+For the deep dive on why dialogue mode beats segment mode, read **[`docs/RESEARCH-NATURAL-AUDIO.md`](./docs/RESEARCH-NATURAL-AUDIO.md)** — research on how other open-source multi-voice projects approach this.
 
 ---
 
@@ -360,8 +426,11 @@ cp voices.config.example.json voices.config.json             # create your voice
 echo 'ELEVENLABS_API_KEY=sk_your_key' > .env                  # set your API key
 
 # Generate
-node src/index.js transcripts/sample.txt                     # generate the sample
+node src/index.js transcripts/sample.txt                     # default (auto mode)
+node src/index.js transcripts/your-file.txt --mode dialogue  # force dialogue (most natural; needs v3 alpha)
+node src/index.js transcripts/your-file.txt --mode segment   # force segment (no v3 alpha needed)
 node src/index.js transcripts/your-file.txt -o foo.mp3       # custom output path
+node src/index.js transcripts/your-file.txt --seed 42        # deterministic generation
 node src/index.js transcripts/your-file.txt --no-cache       # force fresh take
 
 # Listen

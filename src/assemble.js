@@ -64,7 +64,7 @@ export async function assembleClips({ clipPaths, gapsMs, outputPath, cacheDir })
     '-f', 'concat',
     '-safe', '0',
     '-i', listPath,
-    '-b:a', '128k',
+    '-b:a', '192k',
     '-ar', '44100',
     '-ac', '2',
     outputPath,

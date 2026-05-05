@@ -104,16 +104,26 @@ If they say something like _"help me pick voices"_ or _"I want a curious-soundin
 
 Don't auto-pick voices unless they explicitly ask. Their casting choice matters.
 
-## Auto-fallback when v3 alpha access is missing
+## Modes (`--mode auto|dialogue|segment`)
 
-The default model is `eleven_v3` (alpha). On the **first** generation attempt:
+The CLI now ships three modes. Default is `auto`.
 
-- If you see a 4xx response with `model_not_found`, `permission_denied`, or any message hinting v3 alpha access is missing, **don't make the user debug.** Automatically:
-  1. Re-run with `ELEVEN_MODEL_ID=eleven_multilingual_v2` prefixed.
-  2. Tell them clearly: _"Your account doesn't have Eleven v3 alpha access yet, so I fell back to Multilingual v2. The audio will work but **the `[bracketed]` tags won't render** — they'll either be silently dropped or read aloud literally. To get expressive tags working, request alpha access at https://help.elevenlabs.io/hc/en-us/articles/35869066075921 — usually approved within a few days."_
-  3. Suggest stripping tags from the transcript text for the v2 fallback so they don't get read aloud as words.
+- **`dialogue`** — sends each ≤1900-char chunk to `/v1/text-to-dialogue`. The v3 model generates the whole exchange as one coherent performance: real turn-taking, prosody matching, interruptions. **Most natural.** Requires v3 alpha access. Coarser cache (per chunk, ~10-15 segments).
+- **`segment`** — generates each line individually via `/v1/text-to-speech`, then concats. Per-segment `voiceSettings` honored. Finest-grained cache. Less natural conversation flow but works on any account.
+- **`auto`** — try dialogue, automatically fall back to segment if the dialogue endpoint returns a v3 access error (4xx with `model_not_found` / permission / alpha hints). The fallback is built into `src/index.js` (see `isV3AccessError`); the user sees a warning + a link to request alpha access, then segment mode runs. **You don't need to handle this manually** — the script does it.
 
-Only fall back automatically once. If subsequent generations also fail with v3, ask before retrying with v2 each time — the user might want to fix the alpha access first.
+When the user asks "which mode should I use?" — recommend `auto` (the default). Mention the trade-off: dialogue needs v3 alpha but sounds noticeably more like a real conversation; segment works without v3 alpha and gives per-line `voiceSettings` control.
+
+If the user wants to **A/B compare**, suggest:
+
+```bash
+node src/index.js transcripts/<file>.txt --mode dialogue -o out/dialogue.mp3
+node src/index.js transcripts/<file>.txt --mode segment  -o out/segment.mp3
+```
+
+Diff is most obvious on reactive lines (laughs answering laughs, interruptions, tonal shifts).
+
+If the user already attempted dialogue mode and got a permission error in `auto`, **don't suggest re-trying dialogue on every subsequent run** — they need to request alpha access first. Default to `--mode segment` until they confirm access landed.
 
 ## Testing patterns
 
@@ -179,12 +189,14 @@ Always pull guidance from `TAGS.md` rather than reciting tags from memory — th
 
 ## Architecture (big picture)
 
-Single-purpose CLI, four files in `src/`:
+Single-purpose CLI, six files in `src/`:
 
 - **`parse.js`** → `parseTranscript(text)`. Regex matches `[hh:mm:ss] Speaker: text`. Lines without a timestamp fold into the previous segment.
-- **`tts.js`** → `generateClip({ text, voiceId, voiceSettings, cacheDir })`. Calls `client.textToSpeech.convert(voiceId, …)` from `@elevenlabs/elevenlabs-js`. Cache key is `sha256(voiceId|modelId|voiceSettings|text).slice(0,16)`.
-- **`assemble.js`** → `assembleClips({ clipPaths, gapsMs, outputPath, cacheDir })`. Pre-generates one silence MP3 per unique gap length, writes a concat list, runs `ffmpeg -f concat …`. Re-encodes (not `-c copy`) so silence and clip params line up.
-- **`index.js`** orchestrates: parse → validate every speaker is mapped → for each segment, TTS sequentially → compute gap (250ms same speaker, 500ms switch) → assemble.
+- **`polish.js`** → `polishClip(inputPath, outputPath)`. ffmpeg filter chain: silence-trim both ends + loudnorm to -16 LUFS + 192k bitrate. Used by both modes.
+- **`tts.js`** → `generateClip({ text, voiceId, voiceSettings, cacheDir })`. Calls `client.textToSpeech.convert(voiceId, …)` from `@elevenlabs/elevenlabs-js`. Caches polished clips. Cache key is `sha256(voiceId|modelId|voiceSettings|POLISH_VERSION|text).slice(0,16)`. **Used in segment mode.**
+- **`dialogue.js`** → `runDialogueMode({ segments, voiceMap, cacheDir, noCache, seed })`. Chunks segments to ≤1900 chars, POSTs each chunk's `inputs[]` to `/v1/text-to-dialogue` via fetch, polishes the chunk audio, caches by chunk hash. **Used in dialogue mode.**
+- **`assemble.js`** → `assembleClips({ clipPaths, gapsMs, outputPath, cacheDir })`. Pre-generates silence clips, writes a concat list, runs `ffmpeg -f concat …`. Re-encodes so silence and clip params line up. Output bitrate 192k.
+- **`index.js`** orchestrates: parse → validate every speaker is mapped → run chosen mode → assemble. In `auto` mode, tries dialogue then falls back to segment via `isV3AccessError(err)` detection.
 
 ## Locked design decisions
 
@@ -197,7 +209,15 @@ Single-purpose CLI, four files in `src/`:
 
 ## Caching
 
-`.cache/` holds per-segment MP3s and reusable silence clips. Keyed by content + voice + model + voiceSettings, so the same line in the same voice never regenerates. `--no-cache` forces regeneration. Safe to delete `.cache/` anytime.
+`.cache/` holds two cache directories plus shared silence clips:
+
+- `.cache/segments/` — segment-mode clips, one MP3 per `(voice + model + settings + text)` hash. Edit one line → only that line re-generates.
+- `.cache/dialogue/` — dialogue-mode chunks, one MP3 per `(inputs[] + model + seed + polish version)` hash. Edit one line in a chunk → that whole chunk re-generates (~10-15 segments at once).
+- `.cache/silence_*.mp3` — pre-generated silence clips, shared by both modes.
+
+All clips are polished (silence trimmed + loudness normalized to -16 LUFS) before caching. The `POLISH_VERSION` constant in `src/polish.js` is part of every cache key, so bumping it invalidates all caches simultaneously.
+
+`--no-cache` forces regeneration. Safe to delete `.cache/` anytime — it'll repopulate.
 
 ## What lives where
 
