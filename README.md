@@ -32,6 +32,21 @@ Three samples generated from the same transcript ([`transcripts/cs-interview-exa
 
 ---
 
+## 🧠 Two project-local skills (built-in tutor + walkthrough)
+
+This repo ships two Claude Code skills under `.claude/skills/`. They auto-load when relevant — you don't have to do anything to install them. Just open the project in Claude Code and ask away.
+
+| Skill | Triggers when you ask… |
+| --- | --- |
+| **`tannerproject`** | "set me up", "walk me through", "generate audio from this transcript", "this isn't working", "pick voices for me", "what mode should I use" — anything operational |
+| **`tutor-mode`** | "how does this work?", "why did Jake do X?", "what's plan mode?", "explain skills", "teach me", "I'm new to this" — anything learning-mode |
+
+Both are also invocable manually: type `/tannerproject` or `/tutor-mode` in chat.
+
+The `tutor-mode` skill is the one to lean into if you want to learn Claude Code while building — it walks through how this project was actually built (research, A/B testing, iteration), the keyboard shortcuts and concepts you'll use most, and dev patterns that work for AI-assisted development in general. Less "RTFM," more "let me show you."
+
+---
+
 ## 📬 Hey Tanner — start here
 
 This is the prototype Jake walked you through on the call. It's the **reenactment** half of your interviewer-training pipeline:
