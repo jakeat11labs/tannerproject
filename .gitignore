@@ -1,0 +1,7 @@
+node_modules/
+.env
+voices.config.json
+.cache/
+out/
+*.log
+.DS_Store

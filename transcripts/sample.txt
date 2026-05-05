@@ -1,0 +1,8 @@
+[00:00:00] Speaker A: [excited] Welcome to the show! Today we're talking about generative audio.
+[00:00:06] Speaker B: [chuckles] Thanks for having me. It's a topic I could talk about for HOURS.
+[00:00:11] Speaker A: [curious] Let's start with the basics. How would you explain text-to-speech to someone who's never heard of it?
+[00:00:18] Speaker B: [thoughtful] At its core... it's just a model that turns characters into sound.
+The interesting part — [emphatic] making that sound expressive enough to feel HUMAN.
+[00:00:27] Speaker A: [curious] And what changed in the last couple of years to make it feel that way?
+[00:00:32] Speaker B: Two things, really. [thoughtful] Better data, and a shift toward modeling the audio directly instead of going through intermediate features.
+[00:00:42] Speaker A: [happy] That's a great place to dig in. Let's start there.
