@@ -1,3 +1,5 @@
+![Tanner's Project banner with Jake and Tanner cartoon avatars](./assets/tanners-project-banner.png)
+
 # 🎙️ Two-Voice Interview Generator
 
 > Turn a timestamped two-speaker transcript into one MP3 that **sounds like the interview actually happened** — using ElevenLabs v3 with expressive `[laughs]`, `[whispers]`, `[curious]` audio tags.
