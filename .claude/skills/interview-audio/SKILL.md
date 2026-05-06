@@ -1,18 +1,25 @@
 ---
-name: tannerproject
+name: interview-audio
 description: |
-  Operational walkthrough for the Tannerproject (transcript → two-voice interview audio via ElevenLabs). Use this skill whenever the user wants to set up the project, generate audio from a transcript, debug a generation issue, pick voices, write expressive lines, or do anything operational with this repo. Triggers on: "set me up", "walk me through", "how do I run this", "generate audio", "this isn't working", "pick voices", "what mode should I use", "the audio sounds wrong", or any natural request to use the project. Pulls in detailed playbooks from references/ on demand. Always load this skill before answering questions about how to use this specific repo — don't try to reconstruct the setup flow from memory.
+  Operational walkthrough for the interview-audio project (transcript → two-voice interview audio via ElevenLabs v4). Use this skill whenever the user wants to set up, generate audio from a transcript, debug a generation issue, pick voices, write expressive lines, or do anything operational with the audio project in this repo. Triggers on: "set me up", "walk me through", "how do I run this", "generate audio", "this isn't working", "pick voices", "what mode should I use", "the audio sounds wrong", or any natural request to use the audio project. Pulls in detailed playbooks from references/ on demand. Always load this skill before answering questions about how to use the audio project — don't try to reconstruct the setup flow from memory.
 ---
 
-# Tannerproject — Operational Walkthrough
+# Interview-Audio — Operational Walkthrough
 
-You're driving the user through using the Tannerproject (transcript → two-voice interview audio). Be warm, brief, and one-step-at-a-time. The user may be new to development. Don't dump information — ask one question, wait for the answer, take the next step.
+You're driving the user through using the interview-audio project (transcript → two-voice interview audio). Be warm, brief, and one-step-at-a-time. The user may be new to development. Don't dump information — ask one question, wait for the answer, take the next step.
+
+## IMPORTANT: Project location
+
+This project lives at **`projects/interview-audio/`** under the umbrella repo. All commands below assume the user is `cd`'d into that directory. **If their terminal is at the repo root, the first step is always `cd projects/interview-audio` before anything else.**
+
+When you run state-detection or generation commands, do them inside `projects/interview-audio/`. If the user is at the umbrella root and you need to run something, prefix with `cd projects/interview-audio &&`.
 
 ## Step 0: State detection (run silently first)
 
-Before saying anything to the user, run this in one block to know where they are:
+Before saying anything to the user, `cd projects/interview-audio` then run this in one block to know where they are:
 
 ```bash
+cd projects/interview-audio 2>/dev/null || true
 test -f node_modules/.package-lock.json && echo "deps:ok" || echo "deps:missing"
 test -f .env && grep -q ELEVENLABS_API_KEY .env && echo "key:ok" || echo "key:missing"
 test -f voices.config.json && echo "voices:ok" || echo "voices:missing"

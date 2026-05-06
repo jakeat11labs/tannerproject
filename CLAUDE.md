@@ -1,64 +1,55 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working in this repository.
 
-## What this project does
+## What this is
 
-Turns timestamped two-speaker interview transcripts into one combined MP3 using ElevenLabs. Each speaker gets a distinct voice. Default mode is segment + `eleven_v4`. See `samples/` for pre-rendered output.
+The umbrella repo for things Jake and Tanner build together during their 1:1 sessions. Each project lives self-contained under `projects/<project-name>/`. The repo is mostly a holder; the real work happens inside the projects.
 
-## Where to look for guidance
+## How to navigate
 
-This repo ships two project-local skills under `.claude/skills/`. **Load the relevant one** before answering — don't try to reconstruct workflows from this file.
+- **User wants to use a specific project** (set up, run, debug): `cd projects/<name>/` and rely on that project's own README, CLAUDE.md, and any project-scoped skills.
+- **User asks "how does X work" / "teach me" / "explain"** at the umbrella level: load `.claude/skills/tutor-mode/SKILL.md`. Tutor mode is general — covers Claude Code basics, dev patterns, the case study of how the projects here were built.
+- **User asks operational questions about the audio project** specifically: load `.claude/skills/interview-audio/SKILL.md`. This skill knows to expect commands run from `projects/interview-audio/`.
 
-| User intent | Load |
-| --- | --- |
-| Set up the project, generate audio, debug a generation issue, pick voices, write expressive lines, troubleshoot anything operational | `.claude/skills/tannerproject/SKILL.md` |
-| "How does this work?", "Why did we do X?", "Explain Y", "Teach me Z", learning Claude Code, learning AI-assisted dev | `.claude/skills/tutor-mode/SKILL.md` |
+## Current projects
 
-If both could apply, default to `tannerproject` for "how do I do X with this project" and `tutor-mode` for "how does X work." When in doubt, ask the user.
+| Path | Project | Skill |
+| --- | --- | --- |
+| `projects/interview-audio/` | Two-voice interview generator (ElevenLabs v4 + ffmpeg) | `interview-audio` |
 
-## Architecture (always-relevant facts)
+When new projects are added, they go under `projects/` with their own README, CLAUDE.md, and dependency manifest. Add the corresponding row above.
 
-Six files in `src/`:
+## Universal rules (always in context)
 
-- **`parse.js`** — `parseTranscript(text)`. Regex matches `[hh:mm:ss] Speaker: text`. Continuation lines (no timestamp) fold into previous segment.
-- **`polish.js`** — `polishClip(in, out)`. ffmpeg silence-trim + loudnorm to -16 LUFS + 192k bitrate. Used by both modes.
-- **`tts.js`** — segment mode TTS via `/v1/text-to-speech`. Cache key: `sha256(voiceId|model|voiceSettings|POLISH_VERSION|text)`. Default model `eleven_v4`, override via `ELEVEN_MODEL_ID`.
-- **`dialogue.js`** — dialogue mode via `/v1/text-to-dialogue`. Hard-pinned to `eleven_v3` (endpoint requirement). Chunks segments to ≤1900 chars per request.
-- **`assemble.js`** — ffmpeg concat list with silence padding (250 ms same-speaker, 500 ms speaker switch in segment mode; 500 ms between dialogue chunks).
-- **`index.js`** — CLI orchestrator. `--mode segment|dialogue|auto` (default: segment). Auto-fallback logic in `isV3AccessError()`.
+- **Never commit secrets.** `.env`, `voices.config.json`, and similar live inside their project folder and are gitignored. Always `git status` before staging.
+- **Never paste a project's working content** (e.g., interview transcripts, voice IDs, customer data) **into commit messages, MEMORY.md, or any persistent file**. Commit messages describe the change, not the content.
+- **Don't echo `.env` or sensitive content into terminal output during a screen-share** — summarize counts and shapes, not contents.
+- **The user (Jake and Tanner) are ElevenLabs employees with unlimited API credits.** Don't gate or prompt for confirmation on cost/length grounds — just run.
 
-## Locked design decisions
+## When in doubt about which project
 
-- **Transcript format**: plain `[hh:mm:ss] Speaker: text…`. Continuation lines fold into previous segment. Speaker names case-sensitive, must match `voices.config.json` keys exactly.
-- **Timing**: back-to-back natural pacing. Source timestamps are informational only — output uses fixed gap rules.
-- **Stack**: Node ≥ 20 (ESM, `"type": "module"`), `@elevenlabs/elevenlabs-js`, `dotenv`, ffmpeg via raw `child_process.spawn`.
-- **Default model**: `eleven_v4` for segment mode (override with `ELEVEN_MODEL_ID`). Dialogue mode is pinned to `eleven_v3`. See `tannerproject/references/modes.md` for the full tradeoff table.
-- **Cache layout**: `.cache/segments/` (per-line, segment mode), `.cache/dialogue/` (per-chunk, dialogue mode), `.cache/silence_*.mp3` (shared). Bumping `POLISH_VERSION` in `src/polish.js` invalidates everything.
-- **Output**: 192 kbps stereo MP3 at 44.1 kHz at `out/<basename>.mp3`.
+If the user's request doesn't make clear which project they mean, ask. Don't guess. Each project has its own conventions; cross-project assumptions cause subtle bugs.
 
-## What lives where
+## Pages site
 
-- `src/` — source (six files, ~500 lines total)
-- `transcripts/` — input `.txt` files (sample + cs-interview-example committed)
-- `samples/` — pre-rendered MP3s (A: dialogue+v3, B: segment+v3, C: segment+v4)
-- `voices.config.json` — gitignored speaker→voice map (template at `voices.config.example.json`)
-- `out/`, `.cache/` — gitignored
-- `TAGS.md` — Eleven v3 audio-tag canonical reference
-- `CONVERSATION.md` / `CONVERSATION-RAW.md` — narrative + verbatim of how this project was built
-- `docs/RESEARCH-NATURAL-AUDIO.md` — research notes on multi-voice TTS
-- `.claude/skills/tannerproject/` — operational walkthrough skill
-- `.claude/skills/tutor-mode/` — learning/case-study skill
+`index.html` at root is the GitHub Pages landing page (live at https://jakeat11labs.github.io/tannerproject/). It showcases the projects under `projects/`. When a new project lands, add a card to `index.html` — there's a clearly-marked sample-card pattern used currently for the audio project that's easy to copy.
 
-## Universal safety rules (always in context)
+`.nojekyll` is present so Pages serves files as-is, without Jekyll processing.
 
-- **Never commit `.env` or `voices.config.json`.** Both gitignored. Run `git status` before staging.
-- **Never paste interview content into commits, MEMORY.md, or other persistent locations.** Treat transcripts as private even after sanitization.
-- **Never `cat .env` or transcript content into terminal output during screen-share.** Summarize counts and shapes, not content.
-- **Never modify these files without intent:** `.gitignore` should keep secrets out; deleting entries can leak. `voices.config.example.json` is a public template — don't put real IDs in it.
+## File-tree summary
 
-## User context
-
-Jake (the project owner) and Tanner (the friend learning) are ElevenLabs employees with unlimited API usage. **Don't gate or prompt for confirmation based on transcript length or cost.** Just run.
-
-Tanner is new to development and Claude Code. Lean toward warmth, plain language, and one-step-at-a-time guidance — see `.claude/skills/tannerproject/SKILL.md` for the operational walkthrough script and `.claude/skills/tutor-mode/SKILL.md` for tutor-mode behavior.
+```
+tannerproject/
+├── README.md                   ← umbrella README (project list, tools)
+├── CLAUDE.md                   ← this file
+├── index.html                  ← Pages landing
+├── .nojekyll
+├── LICENSE
+├── assets/                     ← shared brand
+├── .claude/skills/             ← skills, loaded on demand
+│   ├── interview-audio/        ← audio project walkthrough
+│   └── tutor-mode/             ← Claude Code learning mode + case study
+└── projects/
+    └── interview-audio/        ← self-contained: own README, CLAUDE.md, deps, samples, docs
+```

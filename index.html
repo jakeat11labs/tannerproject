@@ -125,9 +125,7 @@
     .banner img {
       width: 100%;
       height: auto;
-      max-height: 420px;
-      object-fit: cover;
-      object-position: center;
+      display: block;
       border-radius: 8px;
       box-shadow: var(--shadow-lift);
     }
@@ -482,6 +480,52 @@
     }
 
     /* ============================================================
+       VALEDICTION — closing message before footer
+       ============================================================ */
+    .valediction {
+      max-width: var(--container-narrow);
+      margin: 6rem auto 0;
+      padding: 0 1.5rem;
+      text-align: center;
+      position: relative;
+    }
+    .valediction::before,
+    .valediction::after {
+      content: '';
+      display: block;
+      width: 3rem;
+      height: 1px;
+      background: var(--rule-strong);
+      margin: 0 auto 2.5rem;
+    }
+    .valediction::after {
+      margin: 2.5rem auto 0;
+    }
+    .valediction p {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(2.25rem, 5vw, 3.25rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .valediction em {
+      font-style: italic;
+      color: var(--accent);
+      display: inline-block;
+    }
+    .valediction .signoff {
+      display: block;
+      margin-top: 0.875rem;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    /* ============================================================
        FOOTER
        ============================================================ */
     footer {
@@ -521,7 +565,7 @@
     }
     /* Samples are intentionally NOT animated — audio players need to be
        interactable immediately. Decorative sections fade up around them. */
-    .banner, .masthead, .intro, .section-head, .callout, .more, footer {
+    .banner, .masthead, .intro, .section-head, .callout, .more, .valediction, footer {
       opacity: 0;
       animation: rise 0.7s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
     }
@@ -531,7 +575,8 @@
     .section-head { animation-delay: 0.50s; }
     .callout      { animation-delay: 0.65s; }
     .more         { animation-delay: 0.78s; }
-    footer        { animation-delay: 0.90s; }
+    .valediction  { animation-delay: 0.90s; }
+    footer        { animation-delay: 1.00s; }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -562,7 +607,7 @@
   <section class="banner">
     <img src="assets/tanners-project-banner.png"
          alt="Tanner's Project banner with Jake and Tanner cartoon avatars"
-         width="1100" height="420" />
+         width="1881" height="836" />
   </section>
 
   <!-- Masthead -->
@@ -608,9 +653,9 @@
         </div>
         <div class="sample-audio">
           <audio controls preload="metadata"
-                 src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/C-segment-v4.mp3">
+                 src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/projects/interview-audio/samples/C-segment-v4.mp3">
             Your browser doesn't support inline audio.
-            <a href="samples/C-segment-v4.mp3">Download the MP3</a>.
+            <a href="projects/interview-audio/samples/C-segment-v4.mp3">Download the MP3</a>.
           </audio>
         </div>
       </div>
@@ -631,9 +676,9 @@
         </div>
         <div class="sample-audio">
           <audio controls preload="metadata"
-                 src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/A-dialogue-v3.mp3">
+                 src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/projects/interview-audio/samples/A-dialogue-v3.mp3">
             Your browser doesn't support inline audio.
-            <a href="samples/A-dialogue-v3.mp3">Download the MP3</a>.
+            <a href="projects/interview-audio/samples/A-dialogue-v3.mp3">Download the MP3</a>.
           </audio>
         </div>
       </div>
@@ -654,9 +699,9 @@
         </div>
         <div class="sample-audio">
           <audio controls preload="metadata"
-                 src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/B-segment-v3.mp3">
+                 src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/projects/interview-audio/samples/B-segment-v3.mp3">
             Your browser doesn't support inline audio.
-            <a href="samples/B-segment-v3.mp3">Download the MP3</a>.
+            <a href="projects/interview-audio/samples/B-segment-v3.mp3">Download the MP3</a>.
           </audio>
         </div>
       </div>
@@ -686,28 +731,28 @@
         </a>
       </li>
       <li>
-        <a href="https://github.com/jakeat11labs/tannerproject/blob/main/CONVERSATION.md">
+        <a href="https://github.com/jakeat11labs/tannerproject/blob/main/projects/interview-audio/CONVERSATION.md">
           <span class="num">02</span>
           <span class="title-link">How this was built</span>
           <span class="desc">A narrative walkthrough of the dev session, with lessons learned.</span>
         </a>
       </li>
       <li>
-        <a href="https://github.com/jakeat11labs/tannerproject/blob/main/CONVERSATION-RAW.md">
+        <a href="https://github.com/jakeat11labs/tannerproject/blob/main/projects/interview-audio/CONVERSATION-RAW.md">
           <span class="num">03</span>
           <span class="title-link">Verbatim transcript</span>
           <span class="desc">Every message, every reply, every tool call from the session.</span>
         </a>
       </li>
       <li>
-        <a href="https://github.com/jakeat11labs/tannerproject/blob/main/TAGS.md">
+        <a href="https://github.com/jakeat11labs/tannerproject/blob/main/projects/interview-audio/TAGS.md">
           <span class="num">04</span>
           <span class="title-link">Audio tag reference</span>
           <span class="desc">Every official ElevenLabs v3 audio tag, categorized.</span>
         </a>
       </li>
       <li>
-        <a href="https://github.com/jakeat11labs/tannerproject/blob/main/docs/RESEARCH-NATURAL-AUDIO.md">
+        <a href="https://github.com/jakeat11labs/tannerproject/blob/main/projects/interview-audio/docs/RESEARCH-NATURAL-AUDIO.md">
           <span class="num">05</span>
           <span class="title-link">Multi-voice TTS research</span>
           <span class="desc">How other open-source projects approach natural-sounding multi-voice audio.</span>
@@ -715,6 +760,11 @@
       </li>
     </ul>
   </section>
+
+  <!-- Closing valediction -->
+  <aside class="valediction">
+    <p>For Tanner. <em>You got this.</em><span class="signoff">— jake</span></p>
+  </aside>
 
   <!-- Footer -->
   <footer>
