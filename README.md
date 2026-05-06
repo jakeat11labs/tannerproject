@@ -20,23 +20,13 @@ One command in. One MP3 out. No web UI, no manual stitching.
 
 Three samples generated from the same transcript ([`transcripts/cs-interview-example.txt`](./transcripts/cs-interview-example.txt) — a synthesized customer-success behavioral interview, ~2 minutes, two speakers with v3 expressive tags). Click to play in your browser:
 
-### 🟢 C — Segment + v4 _(default, recommended)_
+| Sample | Mode | Model | Duration | Why it sounds the way it does |
+| --- | --- | --- | --- | --- |
+| 🟢 [**C — Segment + v4**](https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/C-segment-v4.mp3) _(default, recommended)_ | segment | `eleven_v4` | 2:11 | Newest model, tighter pacing, expressive without needing dialogue mode |
+| 🔵 [**A — Dialogue + v3**](https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/A-dialogue-v3.mp3) | dialogue | `eleven_v3` | 2:32 | Whole conversation generated as one performance — real turn-taking, prosody match |
+| ⚪ [**B — Segment + v3**](https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/B-segment-v3.mp3) | segment | `eleven_v3` | 2:28 | Original v3 baseline, per-line stitched. Comparison reference. |
 
-`segment` mode · `eleven_v4` · 2:11 · Newest model, tighter pacing, expressive without needing dialogue mode.
-
-https://github.com/user-attachments/assets/c89584c2-8926-474e-b11c-71905b291fd0
-
-### 🔵 A — Dialogue + v3
-
-`dialogue` mode · `eleven_v3` · 2:32 · Whole conversation generated as one performance — real turn-taking, prosody match.
-
-https://github.com/user-attachments/assets/7d4ecbb3-27c2-4df3-9d27-f9e1ba58f15a
-
-### ⚪ B — Segment + v3
-
-`segment` mode · `eleven_v3` · 2:28 · Original v3 baseline, per-line stitched. Comparison reference.
-
-https://github.com/user-attachments/assets/1ce977bd-47fa-4868-a78f-a5d18af960f3
+> 💡 Click any sample to open it in a new tab — your browser's native audio player will play it. _(Want a styled audio-player page instead? Once GitHub Pages is enabled on this repo, samples will also be playable at https://jakeat11labs.github.io/tannerproject/)_
 
 **Recommended listen order:** B → A → C. B is the baseline; A shows the dialogue-API upgrade; C shows what v4 does on top of segment-mode stitching.
 
