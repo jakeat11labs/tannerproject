@@ -77,9 +77,9 @@ POST /v1/text-to-dialogue
 
 Key constraints:
 
-- **2000 characters total per request** across all `inputs[].text`. Longer transcripts must be chunked.
+- **2000 characters total per request** across all `inputs[].text` for `eleven_v3`. v4 / v4_hq cap is **1500 characters per request**. Longer transcripts must be chunked accordingly.
 - **Up to 10 unique voice IDs per request.** No issue for two-speaker interviews.
-- **v3 only.** Falls back to no support if your account doesn't have v3 alpha access.
+- **Officially v3 only.** Live API testing (May 2026) shows `eleven_v4` and `eleven_v4_hq` are also accepted by the dialogue endpoint despite the docs — though v4 dialogue tends to read aggressively fast (~2× v3 dialogue on the same input). Documented default stays v3.
 - **Non-deterministic** — pass `seed` for repeatability.
 - **2 free regenerations per piece of content (dashboard only).**
 

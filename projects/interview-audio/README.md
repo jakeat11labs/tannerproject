@@ -257,8 +257,9 @@ The default is `segment` mode with the `eleven_v4` model — the recommended pat
 # Default — segment mode + v4
 node src/index.js transcripts/sample.txt
 
-# Try dialogue mode (v3 only, opt-in)
+# Try dialogue mode (defaults to v3; ELEVEN_MODEL_ID can override to v4/v4_hq)
 node src/index.js transcripts/sample.txt --mode dialogue
+ELEVEN_MODEL_ID=eleven_v4 node src/index.js transcripts/sample.txt --mode dialogue
 
 # Override the segment-mode model
 ELEVEN_MODEL_ID=eleven_v4_hq node src/index.js transcripts/sample.txt

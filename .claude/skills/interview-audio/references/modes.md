@@ -22,7 +22,8 @@ Each speaker line goes through `/v1/text-to-speech` individually, then ffmpeg-co
 
 Sends each ≤1900-char chunk to `/v1/text-to-dialogue`. The model generates the whole exchange as one coherent performance — real turn-taking, prosody matching across speakers, interruptions. Coarser cache (per chunk, ~10-15 segments at once).
 
-- **Hard-pinned to `eleven_v3`.** The endpoint requires v3 specifically; v4 is TTS-only. `ELEVEN_MODEL_ID` does not apply here.
+- **Default model: `eleven_v3`** (the documented path). The official docs say "v3 only," but live API testing (May 2026) confirms `eleven_v4` and `eleven_v4_hq` are also accepted and return valid audio. **`ELEVEN_MODEL_ID` overrides** the default. Note: v4 dialogue tends to read **substantially faster** than v3 dialogue — sometimes ~2× faster. If the user wants the natural cross-speaker prosody of dialogue mode at a normal pace, default v3 is the right pick. If they want tighter, more confident delivery and don't mind the speedup, `ELEVEN_MODEL_ID=eleven_v4 --mode dialogue` works.
+- **Per-model chunk size** (handled automatically by `chunkSegments`): v3 max 1900 chars/chunk (endpoint limit 2000), v4/v4_hq max 1400 chars/chunk (endpoint limit 1500).
 - `voiceSettings` does NOT apply — the dialogue endpoint doesn't accept per-input voice settings.
 - Best for: reactive moments where one speaker's tone should affect the other's reply (laugh-on-laugh, interruptions, tonal shifts).
 
