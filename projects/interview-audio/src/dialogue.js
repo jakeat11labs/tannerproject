@@ -4,10 +4,23 @@ import { join } from 'node:path';
 import { polishClip, POLISH_VERSION } from './polish.js';
 
 const ENDPOINT = 'https://api.elevenlabs.io/v1/text-to-dialogue';
-const MAX_CHARS_PER_CHUNK = 1900;
 const CHUNK_GAP_MS = 500;
 
-export function chunkSegments(segments, maxChars = MAX_CHARS_PER_CHUNK) {
+// Per-model max chars on the dialogue endpoint, derived from /v1/models
+// `maximum_text_length_per_request`. Set conservatively below the limit
+// so we have headroom for any whitespace/encoding overhead.
+const MAX_CHARS_BY_MODEL = {
+  eleven_v3: 1900,       // limit 2000
+  eleven_v4: 1400,       // limit 1500
+  eleven_v4_hq: 1400,    // limit 1500
+};
+const DEFAULT_MAX_CHARS = 1400;
+
+export function maxCharsForModel(modelId) {
+  return MAX_CHARS_BY_MODEL[modelId] || DEFAULT_MAX_CHARS;
+}
+
+export function chunkSegments(segments, maxChars = DEFAULT_MAX_CHARS) {
   const chunks = [];
   let current = [];
   let currentChars = 0;
@@ -69,14 +82,14 @@ async function callDialogueApi({ inputs, modelId, seed }) {
   return Buffer.from(await res.arrayBuffer());
 }
 
-// The Text-to-Dialogue endpoint requires eleven_v3 specifically — v4/v4_hq are TTS-only.
-// We deliberately do NOT honor ELEVEN_MODEL_ID here; that env var only applies to segment mode.
-const DIALOGUE_MODEL_ID = 'eleven_v3';
-
+// Dialogue endpoint default. Official docs say "v3 only," but live API
+// testing (May 2026) confirms v4 and v4_hq also accepted and return valid
+// audio (mono for v4, stereo for v4_hq). ELEVEN_MODEL_ID overrides the
+// default for both segment and dialogue modes.
 export async function generateDialogueChunk({
   segments,
   voiceMap,
-  modelId = DIALOGUE_MODEL_ID,
+  modelId = process.env.ELEVEN_MODEL_ID || 'eleven_v3',
   cacheDir,
   noCache = false,
   seed,
@@ -109,8 +122,10 @@ export async function generateDialogueChunk({
 }
 
 export async function runDialogueMode({ segments, voiceMap, cacheDir, noCache, seed }) {
-  const chunks = chunkSegments(segments);
-  console.log(`Dialogue mode: ${chunks.length} chunk(s) for ${segments.length} segments`);
+  const modelId = process.env.ELEVEN_MODEL_ID || 'eleven_v3';
+  const maxChars = maxCharsForModel(modelId);
+  const chunks = chunkSegments(segments, maxChars);
+  console.log(`Dialogue mode: ${chunks.length} chunk(s) for ${segments.length} segments (model: ${modelId}, max ${maxChars} chars/chunk)`);
 
   const clipPaths = [];
   let cacheHits = 0;

@@ -39,6 +39,7 @@
       --letter-c: #C8541E;          /* terra-cotta */
       --letter-a: #5C7A4A;          /* sage olive */
       --letter-b: #8B7355;          /* warm sand */
+      --letter-d: #6B5B8E;          /* muted lavender */
 
       --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
       --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -70,6 +71,7 @@
         --letter-c: #E89260;
         --letter-a: #95B47C;
         --letter-b: #C9B391;
+        --letter-d: #A99BC4;
       }
     }
 
@@ -304,6 +306,7 @@
     }
     .sample[data-id="A"] .sample-letter { color: var(--letter-a); }
     .sample[data-id="B"] .sample-letter { color: var(--letter-b); }
+    .sample[data-id="D"] .sample-letter { color: var(--letter-d); }
 
     .sample-head { min-width: 0; }
 
@@ -626,14 +629,14 @@
       Different voices for each speaker. Natural pacing. Audio tags like <code>[laughs]</code> and <code>[whispers]</code> rendered properly. Built collaboratively in Claude Code — the entire dev session, including all the wrong turns and tool switches, is preserved in the repo for you to read through.
     </p>
     <p>
-      Below: three sample outputs from the same transcript, generated with different mode + model combinations. Listen and compare.
+      Below: four sample outputs from the same transcript, generated with different mode + model combinations. Listen and compare.
     </p>
   </section>
 
   <!-- Samples -->
   <div class="section-head">
     <h2>Listen for yourself</h2>
-    <span class="meta">three · samples · same · transcript</span>
+    <span class="meta">four · samples · same · transcript</span>
   </div>
 
   <section class="samples">
@@ -684,6 +687,29 @@
       </div>
     </article>
 
+    <!-- D — Dialogue v4 (the experimental "fast" variant) -->
+    <article class="sample" data-id="D">
+      <div class="sample-grid">
+        <div class="sample-letter">D</div>
+        <div class="sample-head">
+          <h3 class="sample-title">Dialogue + v4 <em>— experimental</em></h3>
+          <p class="sample-desc">Dialogue endpoint running on v4 instead of v3. Same cross-speaker awareness as A, with v4's tighter pacing. Notably faster — almost half the duration of A. Lands somewhere between "confident" and "rushed" depending on your taste; included for completeness.</p>
+          <dl class="sample-meta">
+            <div><dt>Mode</dt><dd><code>dialogue</code></dd></div>
+            <div><dt>Model</dt><dd><code>eleven_v4</code></dd></div>
+            <div><dt>Duration</dt><dd>1:20</dd></div>
+          </dl>
+        </div>
+        <div class="sample-audio">
+          <audio controls preload="metadata"
+                 src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/projects/interview-audio/samples/D-dialogue-v4.mp3">
+            Your browser doesn't support inline audio.
+            <a href="projects/interview-audio/samples/D-dialogue-v4.mp3">Download the MP3</a>.
+          </audio>
+        </div>
+      </div>
+    </article>
+
     <!-- B — Segment v3 (baseline) -->
     <article class="sample" data-id="B">
       <div class="sample-grid">
@@ -712,7 +738,7 @@
   <!-- Listen order callout -->
   <aside class="callout">
     <strong>Recommended listen order</strong>
-    B → A → C. B is the baseline; A shows the dialogue-API upgrade; C shows what v4 does on top of segment-mode stitching.
+    B → A → C → D. B is the v3 baseline; A is dialogue mode on v3; C is segment mode on v4 (the default); D pushes both upgrades together — dialogue mode running on v4, which gets fast.
   </aside>
 
   <!-- More -->
