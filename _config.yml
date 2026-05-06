@@ -4,6 +4,19 @@ description: "Turn timestamped two-speaker interview transcripts into one MP3 wi
 url: "https://jakeat11labs.github.io"
 baseurl: "/tannerproject"
 
+# Enable plugins (already in GitHub Pages' default whitelist; just need
+# to switch them on via config).
+# - jekyll-relative-links: auto-rewrite our [X](./Y.md) links so they
+#   resolve correctly after Jekyll renders Y.md to Y.html.
+# - jekyll-readme-index: makes README.md the implicit index of the root.
+plugins:
+  - jekyll-relative-links
+  - jekyll-readme-index
+
+relative_links:
+  enabled: true
+  collections: true
+
 # Speed up the build and avoid surprises
 exclude:
   - node_modules
