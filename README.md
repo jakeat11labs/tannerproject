@@ -26,7 +26,16 @@ Three samples generated from the same transcript ([`transcripts/cs-interview-exa
 | 🔵 [**A — Dialogue + v3**](https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/A-dialogue-v3.mp3) | dialogue | `eleven_v3` | 2:32 | Whole conversation generated as one performance — real turn-taking, prosody match |
 | ⚪ [**B — Segment + v3**](https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/B-segment-v3.mp3) | segment | `eleven_v3` | 2:28 | Original v3 baseline, per-line stitched. Comparison reference. |
 
-> 💡 Click any sample to open it in a new tab — your browser's native audio player will play it. _(Want a styled audio-player page instead? Once GitHub Pages is enabled on this repo, samples will also be playable at https://jakeat11labs.github.io/tannerproject/)_
+> 💡 Click any sample to open it in a new tab — your browser's native audio player will play it. **Or visit the [styled site with inline players](https://jakeat11labs.github.io/tannerproject/) — same content, real audio players right in the page.**
+
+<!-- Inline audio players for the Pages site at https://jakeat11labs.github.io/tannerproject/.
+     The <audio> tags are stripped from the github.com README view; bare audio tags only,
+     no labels, so github.com viewers don't see redundant headings. Order matches the table
+     above: C (default) → A → B. -->
+
+<audio controls preload="metadata" src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/C-segment-v4.mp3"></audio>
+<audio controls preload="metadata" src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/A-dialogue-v3.mp3"></audio>
+<audio controls preload="metadata" src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/samples/B-segment-v3.mp3"></audio>
 
 **Recommended listen order:** B → A → C. B is the baseline; A shows the dialogue-API upgrade; C shows what v4 does on top of segment-mode stitching.
 
