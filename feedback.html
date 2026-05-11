@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Notes & Feedback — Tanner's Project</title>
+  <meta name="description" content="Tanner's build notes from each session, paired side-by-side with Jake's feedback. A running record of what was built, what was confusing, and how each loop closed.">
+  <meta name="theme-color" content="#FAF7F2">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%9D%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #FAF7F2;
+      --bg-deep: #F4EFE6;
+      --surface: #FFFFFF;
+      --surface-tint: #F8F3EA;
+      --ink: #1B1812;
+      --ink-soft: #4A463F;
+      --ink-faint: #8B867D;
+      --rule: #E8E2D6;
+      --rule-strong: #D6CFC1;
+
+      --accent: #C8541E;
+      --accent-deep: #A8421A;
+      --accent-soft: rgba(200, 84, 30, 0.10);
+      --accent-glow: rgba(200, 84, 30, 0.18);
+
+      --tanner: #5C7A4A;       /* sage olive — Tanner */
+      --tanner-soft: rgba(92, 122, 74, 0.08);
+      --jake: #C8541E;          /* terra-cotta — Jake */
+      --jake-soft: rgba(200, 84, 30, 0.08);
+
+      --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+      --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+      --container: 1100px;
+      --container-narrow: 720px;
+
+      --shadow-soft: 0 1px 2px rgba(27, 24, 18, 0.04), 0 4px 16px rgba(27, 24, 18, 0.04);
+      --shadow-lift: 0 4px 8px rgba(27, 24, 18, 0.06), 0 12px 32px rgba(27, 24, 18, 0.08);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161310;
+        --bg-deep: #1F1B17;
+        --surface: #211D18;
+        --surface-tint: #2A251F;
+        --ink: #F4EFE6;
+        --ink-soft: #C7BFB2;
+        --ink-faint: #877F73;
+        --rule: #3A352D;
+        --rule-strong: #4D463C;
+        --accent: #E89260;
+        --accent-deep: #D87B45;
+        --accent-soft: rgba(232, 146, 96, 0.12);
+        --accent-glow: rgba(232, 146, 96, 0.22);
+        --tanner: #95B47C;
+        --tanner-soft: rgba(149, 180, 124, 0.10);
+        --jake: #E89260;
+        --jake-soft: rgba(232, 146, 96, 0.10);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+
+    /* warm grain */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.025;
+      z-index: 1;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+    @media (prefers-color-scheme: dark) {
+      body::before { mix-blend-mode: screen; opacity: 0.04; }
+    }
+
+    /* ============ NAV ============ */
+    .topnav {
+      max-width: var(--container);
+      margin: 1.5rem auto 0;
+      padding: 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .topnav a {
+      color: var(--ink-faint);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .topnav a:hover { color: var(--accent); }
+    .topnav .home::before { content: '← '; }
+
+    /* ============ MASTHEAD ============ */
+    .masthead {
+      max-width: var(--container-narrow);
+      margin: 4rem auto 0;
+      padding: 0 1.5rem;
+    }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+    .eyebrow::before {
+      content: '';
+      width: 1.75rem;
+      height: 1px;
+      background: var(--accent);
+    }
+    .title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(2.75rem, 7vw, 4.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+    }
+    .title em {
+      font-style: italic;
+      color: var(--accent);
+      letter-spacing: -0.04em;
+    }
+    .subtitle {
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    /* ============ INTRO ============ */
+    .intro {
+      max-width: var(--container-narrow);
+      margin: 3rem auto 0;
+      padding: 0 1.5rem;
+    }
+    .intro .lead {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(1.2rem, 2.2vw, 1.5rem);
+      line-height: 1.45;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.005em;
+    }
+    .intro p {
+      color: var(--ink-soft);
+      line-height: 1.7;
+    }
+    .intro p + p { margin-top: 1rem; }
+
+    /* ============ FRAMING NOTE ============ */
+    .framing {
+      max-width: var(--container-narrow);
+      margin: 3rem auto 0;
+      padding: 1.75rem 2rem;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--ink-soft);
+      border-radius: 0 4px 4px 0;
+    }
+    .framing-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 1rem;
+    }
+    .framing p {
+      color: var(--ink-soft);
+      font-size: 0.9375rem;
+      line-height: 1.65;
+      margin-bottom: 0.75rem;
+    }
+    .framing p:last-child { margin-bottom: 0; }
+    .framing strong { color: var(--ink); font-weight: 600; }
+    .framing em { color: var(--ink); font-style: italic; }
+
+    /* ============ SESSION HEADER ============ */
+    .session-head {
+      max-width: var(--container);
+      margin: 5rem auto 1.5rem;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: baseline;
+      gap: 1.25rem;
+    }
+    .session-head h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .session-head .meta {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      flex: 1;
+      border-bottom: 1px dashed var(--rule-strong);
+      padding-bottom: 0.625rem;
+      transform: translateY(-4px);
+    }
+
+    /* ============ SIDE-BY-SIDE EXCHANGES ============ */
+    .exchanges {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .exchange {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 1.75rem 2rem;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .exchange:hover {
+      border-color: var(--rule-strong);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .exchange-head {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px dashed var(--rule);
+    }
+    .exchange-num {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      color: var(--ink-faint);
+      flex-shrink: 0;
+    }
+    .exchange-title {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 1.5rem;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .exchange-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .voice {
+      position: relative;
+    }
+    .voice-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      padding: 0.25rem 0.625rem;
+      border-radius: 999px;
+    }
+    .voice-label::before {
+      content: '';
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .voice--tanner .voice-label {
+      color: var(--tanner);
+      background: var(--tanner-soft);
+    }
+    .voice--tanner .voice-label::before { background: var(--tanner); }
+    .voice--jake .voice-label {
+      color: var(--jake);
+      background: var(--jake-soft);
+    }
+    .voice--jake .voice-label::before { background: var(--jake); }
+
+    .voice p {
+      color: var(--ink-soft);
+      line-height: 1.65;
+      margin-bottom: 0.875rem;
+      font-size: 0.9375rem;
+    }
+    .voice p:last-child { margin-bottom: 0; }
+    .voice strong { color: var(--ink); font-weight: 600; }
+    .voice em { color: var(--ink); font-style: italic; }
+    .voice code {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      background: var(--surface-tint);
+      border: 1px solid var(--rule);
+      padding: 0.0625rem 0.4375rem;
+      border-radius: 3px;
+      color: var(--ink);
+    }
+    .voice ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 0.875rem;
+    }
+    .voice ul li {
+      color: var(--ink-soft);
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      padding-left: 1.25rem;
+      position: relative;
+      margin-bottom: 0.4rem;
+    }
+    .voice ul li::before {
+      content: '–';
+      position: absolute;
+      left: 0.25rem;
+      color: var(--ink-faint);
+    }
+
+    @media (max-width: 760px) {
+      .exchange-body { grid-template-columns: 1fr; gap: 1.5rem; }
+      .exchange { padding: 1.5rem 1.5rem; }
+      .voice + .voice {
+        padding-top: 1.5rem;
+        border-top: 1px dashed var(--rule);
+      }
+    }
+
+    /* ============ OPEN-QUESTIONS CALLOUT ============ */
+    .open-questions {
+      max-width: var(--container);
+      margin: 3rem auto 0;
+      padding: 0 1.5rem;
+    }
+    .open-questions-inner {
+      background: var(--accent-soft);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 4px 4px 0;
+      padding: 1.5rem 1.75rem;
+    }
+    .open-questions h3 {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+      margin-bottom: 0.875rem;
+    }
+    @media (prefers-color-scheme: dark) {
+      .open-questions h3 { color: var(--accent); }
+    }
+    .open-questions ul {
+      list-style: none;
+      padding: 0;
+    }
+    .open-questions ul li {
+      color: var(--ink);
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      line-height: 1.5;
+      padding-left: 1.5rem;
+      position: relative;
+      margin-bottom: 0.5rem;
+    }
+    .open-questions ul li::before {
+      content: '○';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 0.9em;
+    }
+
+    /* ============ PARKING LOT ============ */
+    .parking-lot {
+      max-width: var(--container);
+      margin: 4rem auto 0;
+      padding: 0 1.5rem;
+    }
+    .parking-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    @media (max-width: 760px) {
+      .parking-grid { grid-template-columns: 1fr; }
+    }
+
+    .parking-card {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 1.75rem;
+    }
+    .parking-card--tanner { border-top: 3px solid var(--tanner); }
+    .parking-card--jake { border-top: 3px solid var(--jake); }
+
+    .parking-card h3 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 1.5rem;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+    }
+    .parking-card ul {
+      list-style: none;
+      padding: 0;
+    }
+    .parking-card ul li {
+      color: var(--ink-soft);
+      font-size: 0.9375rem;
+      line-height: 1.55;
+      padding-left: 1.5rem;
+      position: relative;
+      margin-bottom: 0.75rem;
+    }
+    .parking-card ul li::before {
+      content: '☐';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--ink-faint);
+      font-size: 0.9em;
+    }
+
+    .agenda-card {
+      grid-column: 1 / -1;
+      background: var(--bg-deep);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 1.75rem 2rem;
+    }
+    .agenda-card h3 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 1.5rem;
+      color: var(--ink);
+      margin-bottom: 1rem;
+    }
+    .agenda-card ol {
+      list-style: none;
+      padding: 0;
+      counter-reset: agenda;
+    }
+    .agenda-card ol li {
+      counter-increment: agenda;
+      color: var(--ink-soft);
+      font-size: 0.9375rem;
+      line-height: 1.55;
+      padding-left: 2rem;
+      position: relative;
+      margin-bottom: 0.5rem;
+    }
+    .agenda-card ol li::before {
+      content: counter(agenda, decimal-leading-zero);
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+    }
+    .agenda-card ol li strong { color: var(--ink); font-weight: 600; }
+
+    /* ============ SECTION-HEAD reuse ============ */
+    .section-head {
+      max-width: var(--container);
+      margin: 5rem auto 1.5rem;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: baseline;
+      gap: 1.25rem;
+    }
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .section-head .meta {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      flex: 1;
+      border-bottom: 1px dashed var(--rule-strong);
+      padding-bottom: 0.625rem;
+      transform: translateY(-4px);
+    }
+
+    /* ============ VALEDICTION + FOOTER ============ */
+    .valediction {
+      max-width: var(--container-narrow);
+      margin: 6rem auto 0;
+      padding: 0 1.5rem;
+      text-align: center;
+    }
+    .valediction::before,
+    .valediction::after {
+      content: '';
+      display: block;
+      width: 3rem;
+      height: 1px;
+      background: var(--rule-strong);
+      margin: 0 auto 2.5rem;
+    }
+    .valediction::after { margin: 2.5rem auto 0; }
+    .valediction p {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .valediction em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .valediction .signoff {
+      display: block;
+      margin-top: 0.875rem;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    footer {
+      max-width: var(--container);
+      margin: 6rem auto 3rem;
+      padding: 2.5rem 1.5rem 0;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.8125rem;
+      color: var(--ink-faint);
+    }
+    footer .signature {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.25rem;
+      color: var(--ink-soft);
+    }
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .topnav, .masthead, .intro, .framing, .session-head, .exchanges, .open-questions, .section-head, .parking-lot, .valediction, footer {
+      opacity: 0;
+      animation: rise 0.7s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
+    }
+    .topnav      { animation-delay: 0.00s; }
+    .masthead    { animation-delay: 0.10s; }
+    .intro       { animation-delay: 0.22s; }
+    .framing     { animation-delay: 0.30s; }
+    .session-head { animation-delay: 0.40s; }
+    .exchanges   { animation-delay: 0.45s; }
+    .open-questions { animation-delay: 0.55s; }
+    .section-head { animation-delay: 0.62s; }
+    .parking-lot { animation-delay: 0.70s; }
+    .valediction { animation-delay: 0.85s; }
+    footer       { animation-delay: 0.95s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top nav -->
+  <nav class="topnav">
+    <a href="index.html" class="home">Tanner's Project</a>
+    <a href="https://github.com/jakeat11labs/tannerproject">Source ↗</a>
+  </nav>
+
+  <!-- Masthead -->
+  <header class="masthead">
+    <p class="eyebrow">build notes · feedback · loop</p>
+    <h1 class="title">Notes <em>&</em> feedback</h1>
+    <p class="subtitle">a running record of what got built, what was confusing, and how the loop closed</p>
+  </header>
+
+  <!-- Framing note -->
+  <aside class="framing">
+    <p class="framing-eyebrow">Before diving in</p>
+    <p>A lot of what's below explains <em>how things work</em> under the hood — voice config formats, parser behavior, which files are gitignored. It's useful to understand so you have a mental model, but <strong>none of it is stuff you should be doing by hand</strong>. Your job is to know what you want and tell Claude. Claude handles the typing, the format decisions, the boilerplate. If you ever find yourself manually editing config files, splitting transcripts, or running find-and-replace, that's a signal we need a better workflow.</p>
+    <p>Keep that in mind as you read — the answers below are for your <em>mental model</em>, not your to-do list.</p>
+  </aside>
+
+  <!-- ============ SESSION: 5/10 → 5/11 ============ -->
+  <div class="session-head">
+    <h2>Interview training clips</h2>
+    <span class="meta">5/10 build · 5/11 feedback</span>
+  </div>
+
+  <section class="exchanges">
+
+    <!-- Exchange 1 -->
+    <article class="exchange">
+      <div class="exchange-head">
+        <span class="exchange-num">01</span>
+        <h3 class="exchange-title">File format conversion & how scripts read data</h3>
+      </div>
+      <div class="exchange-body">
+        <div class="voice voice--tanner">
+          <span class="voice-label">Tanner</span>
+          <p>My sanitize skill (in Claude Cowork) outputs ElevenLabs Studio format. The interview-audio project expects timestamp format. I manually converted between them.</p>
+          <p>I don't fully understand <em>why</em> these two formats exist, whether the parser could be modified to accept Studio format directly, or how continuation lines get attached to previous segments.</p>
+          <p>I got it working but couldn't explain to someone else why the format matters.</p>
+        </div>
+        <div class="voice voice--jake">
+          <span class="voice-label">Jake</span>
+          <p>The bigger problem isn't really the format — it's that you're working across <strong>three different environments</strong> and manually moving files between them. That's the part that should go away.</p>
+          <p>We need to crack open your sanitize skill: if it's hardcoded to a specific output folder, we pull that out — either let it save where you're working, or have it <em>ask</em>.</p>
+          <p>Better yet: collapse the whole thing into <strong>one workflow</strong>. Hand Claude Code a raw transcript and have it sanitize, convert format, and generate audio in one step. No file shuffling.</p>
+          <p><strong>The actual format answer:</strong> there's really only <em>one</em> format this project knows — <code>[hh:mm:ss] Speaker: text</code>. "Studio format" comes from a different ElevenLabs product. They exist because they serve different tools.</p>
+          <p>The parser uses speaker name + text body. Continuation lines fold into the previous segment. The timestamp itself is <em>ignored</em> — output uses fixed gap rules (250ms / 500ms), not your numbers. So timestamp accuracy doesn't matter.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Exchange 2 -->
+    <article class="exchange">
+      <div class="exchange-head">
+        <span class="exchange-num">02</span>
+        <h3 class="exchange-title">Model version & voice settings</h3>
+      </div>
+      <div class="exchange-body">
+        <div class="voice voice--tanner">
+          <span class="voice-label">Tanner</span>
+          <p>The project uses <code>eleven_v4</code> by default. I saw references to <code>eleven_v3</code> and <code>eleven_v4_hq</code>.</p>
+          <p>What's the actual difference? The docs say voice settings are "mostly silently ignored" for v4 — does that mean stability/style do nothing? Should I have used the simple string format for voice config?</p>
+          <p>Should I have experimented with different models for different clips?</p>
+        </div>
+        <div class="voice voice--jake">
+          <span class="voice-label">Jake</span>
+          <p>Quick rundown:</p>
+          <ul>
+            <li><strong>v3</strong> — our expressive model. Good emotional range, less natural in long form.</li>
+            <li><strong>v4</strong> — newest model (not publicly released). Same architecture as v3, retrained to sound more natural. This is why your output sounded so good.</li>
+            <li><strong>v4_hq</strong> — same as v4 but higher quality output. Bigger files. Worth it for finished deliverables, not for iteration.</li>
+          </ul>
+          <p>The samples page runs the <strong>same interview through all the models</strong> — listen to it. That's the best way to internalize the difference.</p>
+          <p>Voice settings being silently ignored on v4 — yeah, mostly. You can simplify <code>voices.config.json</code> to the short string format. No harm leaving them in either.</p>
+          <p>And to your meta-question: <em>yes, you should have experimented</em>. Always experiment. That's the answer to a lot of these.</p>
+          <p><strong>String vs object voice config:</strong> think of it like ordering coffee. Short form (<code>"Tanner": "voice-id"</code>) is "I'll have a coffee" — default everything. Long form (<code>{ voiceId, voiceSettings }</code>) is "medium roast, oat milk, two sugars."</p>
+          <p>On v4 those settings mostly don't do anything — the model decides. On v3 they matter. For v4, short form is cleaner. And really, you shouldn't be hand-editing this file anyway — tell Claude what voices and model you want, and it picks the right form.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Exchange 3 -->
+    <article class="exchange">
+      <div class="exchange-head">
+        <span class="exchange-num">03</span>
+        <h3 class="exchange-title">Hard-coded speaker names</h3>
+      </div>
+      <div class="exchange-body">
+        <div class="voice voice--tanner">
+          <span class="voice-label">Tanner</span>
+          <p>I hard-coded "Tanner" and "Jake" as speaker names during conversion. This felt brittle.</p>
+          <p>Every transcript I convert needs those exact names. If I wanted different names, I'd need to re-convert the transcript or create a new voice config.</p>
+          <p>Is there a better pattern that doesn't require manual find-and-replace every time?</p>
+        </div>
+        <div class="voice voice--jake">
+          <span class="voice-label">Jake</span>
+          <p>You shouldn't be doing <strong>any</strong> of this find-and-replace by hand. That's exactly the kind of thing Claude should swap on the fly.</p>
+          <p>This belongs in the workflow from #1. When we build (or rebuild) the skill, it can:</p>
+          <ul>
+            <li>Ask upfront: "What names should the speakers be?"</li>
+            <li>Auto-detect from the transcript and confirm with you</li>
+            <li>Read names from a config — your choice</li>
+          </ul>
+          <p>If the script has speaker names hardcoded anywhere, that's a bug we just fix. Manual conversion is never the answer when Claude can do it deterministically.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Exchange 4 -->
+    <article class="exchange">
+      <div class="exchange-head">
+        <span class="exchange-num">04</span>
+        <h3 class="exchange-title">Voice ID selection & variability</h3>
+      </div>
+      <div class="exchange-body">
+        <div class="voice voice--tanner">
+          <span class="voice-label">Tanner</span>
+          <p>I picked two voice IDs that felt right based on browsing. But is there a "science" to picking voices that work well together, or is it purely subjective?</p>
+          <p>Should I have tested multiple voice combinations and compared? How much would different voices change how people absorb the training content?</p>
+          <p>I made a decision, but it was mostly a guess.</p>
+        </div>
+        <div class="voice voice--jake">
+          <span class="voice-label">Jake</span>
+          <p>There isn't really a science. It's mostly:</p>
+          <ul>
+            <li>Some voices are optimized for expressiveness, some aren't — depends on how the voice was created</li>
+            <li>Some voices pair better with older models, some with newer</li>
+            <li>The voice library has descriptions worth reading ("works better than X for Y")</li>
+          </ul>
+          <p>Trial and error is the move. Your two voices worked — the contrast between monotone interviewer and enthusiastic interviewee was a smart choice. If you want to level up, A/B a couple of alternates next time and pick the one that lands better.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Exchange 5 -->
+    <article class="exchange">
+      <div class="exchange-head">
+        <span class="exchange-num">05</span>
+        <h3 class="exchange-title">Creating custom UIs & sharing them</h3>
+      </div>
+      <div class="exchange-body">
+        <div class="voice voice--tanner">
+          <span class="voice-label">Tanner</span>
+          <p>I asked Claude Code to build the showcase page. I have no idea whether the HTML follows best practices or if it's just "good enough."</p>
+          <p>How do I properly share this page? Should it be at <code>/docs</code> for GitHub Pages? Will the audio file paths work when deployed?</p>
+          <p>I basically accepted the output blindly because I don't know enough about web dev to evaluate it.</p>
+        </div>
+        <div class="voice voice--jake">
+          <span class="voice-label">Jake</span>
+          <p>The page Claude built you is fine — it got the job done. But "good enough" and "polished" are different bars, and next session I'll show you how to make polished pages pretty easily.</p>
+          <p>Important reframe: <strong>GitHub isn't really a hosting platform</strong>. It's a great place to store code and an okay intermediary, but for actually hosting and showing off, we use <strong>Vercel</strong>. That's the production move.</p>
+          <p>GitHub Pages works for a basic landing page like our <code>index.html</code>, but it's not where polished projects live. Next session we'll cover Vercel and the accessibility/performance side of things.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Exchange 6 -->
+    <article class="exchange">
+      <div class="exchange-head">
+        <span class="exchange-num">06</span>
+        <h3 class="exchange-title">Where files actually live <em>— the big one</em></h3>
+      </div>
+      <div class="exchange-body">
+        <div class="voice voice--tanner">
+          <span class="voice-label">Tanner</span>
+          <p>I'm still struggling with the fundamental mental model of where information sits across three contexts: Claude Cowork, my local machine, Cursor/Claude Code.</p>
+          <p>When I copy a file between folders, where does it "live"? When Claude generates an MP3, where does it actually write? How does GitHub Pages serve files if they're gitignored?</p>
+          <p>I got everything working, but I don't have a clear mental model of file system, local vs remote, what's in git, and how the pieces connect.</p>
+        </div>
+        <div class="voice voice--jake">
+          <span class="voice-label">Jake</span>
+          <p>This is the biggest gap, and it's not a "you" problem — it's that your computer doesn't have a workflow or organization system in place yet. Files land wherever they land. There's no clear pattern.</p>
+          <p>I want to make this the <strong>centerpiece of next session</strong>:</p>
+          <ul>
+            <li><strong>Consolidate</strong> what's on your machine into a sane structure</li>
+            <li><strong>Set habits</strong> for spinning up new projects so this doesn't sprawl again</li>
+            <li><strong>Deep-dive on infrastructure</strong> — local vs GitHub vs hosting</li>
+            <li><strong>Build the mental model</strong> — what's in git, what isn't, what gets deployed</li>
+          </ul>
+          <p>The fact that you can articulate the confusion this clearly tells me you're already 80% there — you just need the framework hung on it.</p>
+          <p><strong>While we're here, one concrete answer:</strong> the <code>out/</code> folder is gitignored generally, but <code>.gitignore</code> has explicit exceptions for your three training clips so Pages can serve them. New clips would need the same exception (Claude handles that — just say "add this clip to the gitignore exception list"). Everything else stays local.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Exchange 7 -->
+    <article class="exchange">
+      <div class="exchange-head">
+        <span class="exchange-num">07</span>
+        <h3 class="exchange-title">Model selection & input format requirements</h3>
+      </div>
+      <div class="exchange-body">
+        <div class="voice voice--tanner">
+          <span class="voice-label">Tanner</span>
+          <p>I don't remember Claude Code asking me which model to use. It defaulted to <code>eleven_v4</code> and I went with it.</p>
+          <p>My sanitize skill outputs three files: <code>annotated-reference</code>, <code>elevenlabs-upload</code>, <code>synopsis</code>. I used the upload one but don't know if that was right, or if different models need different inputs.</p>
+        </div>
+        <div class="voice voice--jake">
+          <span class="voice-label">Jake</span>
+          <p>The reason it didn't ask is that I <strong>hardcoded v4 into the script</strong>. Not a Claude thing — a me thing. You can always ask Claude to swap it, or change it yourself.</p>
+          <p>Important detail buried in your notes: the <strong>1,500 character limit you hit is a dialogue-mode constraint</strong>. Dialogue mode sends everything in one API call. <strong>Segment mode generates each speaker's lines separately and stitches them</strong> — no character limit, sounds better in testing.</p>
+          <p>You were in dialogue mode by accident — that's why you had to manually split that 2,268-char block. Segment mode would've absorbed it.</p>
+          <p>On the three files: using <code>-elevenlabs-upload.txt</code> was correct. The full picture needs us to look at the skill together. Parking-lotted.</p>
+          <p><em>Pulling on the framing note above:</em> you don't need to memorize that v4 is hardcoded, or the dialogue character limit, or which sanitize file maps to what. Know what you <em>want</em> — clean two-speaker audio, this long, this voice — and tell Claude. If you hit a limit, Claude swaps modes. If a default is wrong, Claude changes it. Your job is knowing what good looks like. Claude's job is wiring up the path.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- Exchange 8 -->
+    <article class="exchange">
+      <div class="exchange-head">
+        <span class="exchange-num">08</span>
+        <h3 class="exchange-title">Speaker name consistency across interviews</h3>
+      </div>
+      <div class="exchange-body">
+        <div class="voice voice--tanner">
+          <span class="voice-label">Tanner</span>
+          <p>I used "Tanner" and "Jake" as names for all three clips, but they're from three different candidates. All three sound like the same "Jake" voice in the audio.</p>
+          <p>Should I have used different voice IDs per candidate? Generic names like "Interviewer"/"Candidate"? Separate voice configs per interview?</p>
+          <p>It works for now, but I can imagine this creating confusion if the training library grows.</p>
+        </div>
+        <div class="voice voice--jake">
+          <span class="voice-label">Jake</span>
+          <p>You're spotting a real future problem. Three candidates sounding identical is fine for three clips, less fine when there are thirty.</p>
+          <p><strong>Yes — use different voice IDs per candidate.</strong> My suggestion:</p>
+          <ul>
+            <li>Pick <strong>2–3 good male voices</strong> and <strong>2–3 good female voices</strong> you like</li>
+            <li>Rotate them across candidates so each interview has a distinct sound</li>
+            <li>Voice differentiation matters more than name differentiation for audio listeners</li>
+          </ul>
+          <p>Practically, Claude will create a different voice config per interview (or one config that maps candidate → voice). That's the fun part — when scale changes, the structure changes with it. You can do basically anything you can imagine here.</p>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <!-- Open questions -->
+  <section class="open-questions">
+    <div class="open-questions-inner">
+      <h3>Still open · one I haven't fully answered</h3>
+      <ul>
+        <li>The relationship between the three sanitize-skill output files (<code>annotated-reference</code>, <code>elevenlabs-upload</code>, <code>synopsis</code>) — needs us to look at the skill together</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Parking lot -->
+  <div class="section-head">
+    <h2>Parking lot</h2>
+    <span class="meta">next · touchpoint · prep</span>
+  </div>
+
+  <section class="parking-lot">
+    <div class="parking-grid">
+
+      <div class="parking-card parking-card--tanner">
+        <h3>For Tanner to prep</h3>
+        <ul>
+          <li>Path to the <code>hiring-interview-sanitize</code> skill so we can look at the source together</li>
+          <li>An example <strong>raw</strong> (un-sanitized) transcript so we can see the full input</li>
+          <li>List of any other "I'm copying files between tools" workflows — let's audit all of them</li>
+          <li>A few voices you've bookmarked or liked — bring candidates for the male/female rotation pool</li>
+        </ul>
+      </div>
+
+      <div class="parking-card parking-card--jake">
+        <h3>For Jake to prep</h3>
+        <ul>
+          <li>Decide whether the sanitize skill gets fixed in place or absorbed into the interview-audio workflow</li>
+          <li>Pull together a "starting a new project" checklist — folder structure, git, README/CLAUDE.md scaffolding</li>
+          <li>Vercel walkthrough plan — how to take an HTML page and deploy it properly</li>
+          <li>Sketch the "where files live" mental model (local vs GitHub vs Vercel) as a visual</li>
+          <li>Look at making dialogue/segment mode choice explicit in the script</li>
+        </ul>
+      </div>
+
+      <div class="agenda-card">
+        <h3>Session agenda <em>— draft</em></h3>
+        <ol>
+          <li><strong>Infrastructure deep-dive</strong> — local vs GitHub vs hosting. Clean up the mental model.</li>
+          <li><strong>Computer organization reset</strong> — consolidate projects, set habits for the next one.</li>
+          <li><strong>Sanitize skill review</strong> — read it together, decide fix-in-place vs absorb-into-workflow.</li>
+          <li><strong>Unified workflow design</strong> — raw transcript → audio in one step.</li>
+          <li><strong>Vercel intro</strong> — deploy something polished, end the session with a real URL.</li>
+        </ol>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Valediction -->
+  <aside class="valediction">
+    <p>You crushed this. <em>Onto the next one.</em><span class="signoff">— jake</span></p>
+  </aside>
+
+  <!-- Footer -->
+  <footer>
+    <span class="signature">Made together — jake + tanner.</span>
+    <span><a href="https://github.com/jakeat11labs/tannerproject">jakeat11labs/tannerproject ↗</a></span>
+  </footer>
+
+</body>
+</html>

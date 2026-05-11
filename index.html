@@ -606,6 +606,12 @@
 </head>
 <body>
 
+  <!-- Top nav -->
+  <nav style="max-width: var(--container-banner); margin: 1.5rem auto 0; padding: 0 1.5rem; display: flex; justify-content: flex-end; gap: 1.5rem; font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;">
+    <a href="feedback.html" style="color: var(--ink-faint); text-decoration: none; transition: color 0.2s ease;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--ink-faint)'">Notes & feedback</a>
+    <a href="https://github.com/jakeat11labs/tannerproject" style="color: var(--ink-faint); text-decoration: none; transition: color 0.2s ease;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--ink-faint)'">Source ↗</a>
+  </nav>
+
   <!-- Hero banner -->
   <section class="banner">
     <img src="assets/tanners-project-banner.png"
@@ -740,6 +746,33 @@
     <strong>Recommended listen order</strong>
     B → A → C → D. B is the v3 baseline; A is dialogue mode on v3; C is segment mode on v4 (the default); D pushes both upgrades together — dialogue mode running on v4, which gets fast.
   </aside>
+
+  <!-- Notes & feedback card -->
+  <div class="section-head">
+    <h2>The loop</h2>
+    <span class="meta">build · notes · feedback</span>
+  </div>
+
+  <section class="samples">
+    <a href="feedback.html" style="text-decoration: none; color: inherit;">
+      <article class="sample" style="cursor: pointer; transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;"
+               onmouseover="this.style.borderColor='var(--accent)'; this.style.boxShadow='var(--shadow-lift)'; this.style.transform='translateY(-2px)';"
+               onmouseout="this.style.borderColor='var(--rule)'; this.style.boxShadow='none'; this.style.transform='translateY(0)';">
+        <div class="sample-grid">
+          <div class="sample-letter" style="color: var(--letter-a);">N</div>
+          <div class="sample-head">
+            <h3 class="sample-title">Notes <em>&amp; feedback</em></h3>
+            <p class="sample-desc">After each session, Tanner writes up what she built and where she's still confused. Jake responds. Side-by-side, dated, easy to come back to. Currently: the 5/10 build of interview training clips and the 5/11 feedback.</p>
+            <dl class="sample-meta">
+              <div><dt>Latest</dt><dd>5/11 · feedback on training clips</dd></div>
+              <div><dt>Format</dt><dd>side-by-side</dd></div>
+              <div><dt>View</dt><dd><code>feedback.html</code> →</dd></div>
+            </dl>
+          </div>
+        </div>
+      </article>
+    </a>
+  </section>
 
   <!-- More -->
   <div class="section-head">
