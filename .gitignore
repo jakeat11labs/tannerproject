@@ -3,6 +3,10 @@ node_modules/
 voices.config.json
 .cache/
 out/
+# Exception: allow training clips for GitHub Pages
+!projects/interview-audio/out/unique-impact-clip.mp3
+!projects/interview-audio/out/ai-agents-daily-use-clip.mp3
+!projects/interview-audio/out/why-elevenlabs-deep-dive-clip.mp3
 *.log
 .DS_Store
 
