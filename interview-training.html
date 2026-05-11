@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Training Clips | Tanner's Project</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: #fafafa;
+            padding: 3rem 1.5rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 4rem;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        header p {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .clips-grid {
+            display: grid;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .clip-card {
+            border-bottom: 1px solid #e5e5e5;
+            padding-bottom: 3rem;
+        }
+
+        .clip-card:last-child {
+            border-bottom: none;
+        }
+
+        .clip-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .clip-duration {
+            color: #999;
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+
+        .audio-player {
+            width: 100%;
+            margin: 2rem 0;
+        }
+
+        .technique-label {
+            display: inline-block;
+            color: #666;
+            font-size: 0.875rem;
+            font-weight: 400;
+            margin: 1rem 0;
+            padding: 0.5rem 0;
+            border-left: 3px solid #999;
+            padding-left: 1rem;
+        }
+
+        .what-works {
+            margin-top: 2rem;
+        }
+
+        .what-works h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #1a1a1a;
+        }
+
+        .what-works ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .what-works li {
+            padding: 0.75rem 0;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .what-works li strong {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+
+        .quote {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+            border-left: 3px solid #ddd;
+            font-style: italic;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            color: #999;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e5e5;
+            font-size: 0.875rem;
+        }
+
+        footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        footer a {
+            color: #666;
+            text-decoration: none;
+            border-bottom: 1px solid #ddd;
+        }
+
+        footer a:hover {
+            color: #1a1a1a;
+            border-bottom-color: #999;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 2rem 1rem;
+            }
+
+            header h1 {
+                font-size: 1.75rem;
+            }
+
+            .clips-grid {
+                gap: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Interview Training Clips</h1>
+            <p>Real examples of strong interviewing technique in action</p>
+        </header>
+
+        <div class="clips-grid">
+            <!-- Clip 1 -->
+            <div class="clip-card">
+                <div class="clip-header">
+                    <h2>Unique Impact vs Riding the Wave</h2>
+                    <span class="clip-duration">3.5 minutes · Interview #2</span>
+                </div>
+
+                <div class="technique-label">Challenging Reframe + Follow-up for Specifics</div>
+
+                <audio controls class="audio-player">
+                    <source src="projects/interview-audio/out/unique-impact-clip.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+
+                <div class="quote">
+                    "Who's riding the wave vs creating unique impact?"
+                </div>
+
+                <div class="what-works">
+                    <h3>What Tanner Does Well</h3>
+                    <ul>
+                        <li><strong>Challenging reframe:</strong> "Who's riding the wave vs creating unique impact?" - forces differentiation beyond just "I hit my numbers"</li>
+                        <li><strong>Doesn't accept surface answers:</strong> After Jake gives a conceptual response, immediately asks "Can you give me an example?"</li>
+                        <li><strong>Gets to specifics:</strong> Pushes for a concrete story with names, numbers, and outcomes</li>
+                        <li><strong>Empathetic validation:</strong> "The harder deals are the sweetest ones" - builds rapport after the story</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Clip 2 -->
+            <div class="clip-card">
+                <div class="clip-header">
+                    <h2>AI Agents in Daily Use</h2>
+                    <span class="clip-duration">3 minutes · Interview #3</span>
+                </div>
+
+                <div class="technique-label">Follow-up Questions to Broaden Scope</div>
+
+                <audio controls class="audio-player">
+                    <source src="projects/interview-audio/out/ai-agents-daily-use-clip.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+
+                <div class="quote">
+                    "What about outside of ElevenLabs?"
+                </div>
+
+                <div class="what-works">
+                    <h3>What Tanner Does Well</h3>
+                    <ul>
+                        <li><strong>Open-ended practical question:</strong> "Where are you bringing agentic functions into your day-to-day?" - invites real examples</li>
+                        <li><strong>Active listening:</strong> Hears about the stroller app, validates it ("I love it, that is really cool")</li>
+                        <li><strong>Immediate follow-up:</strong> "What about outside of ElevenLabs?" - doesn't stop at the first answer, broadens the scope</li>
+                        <li><strong>Gets comprehensive picture:</strong> The follow-up reveals extensive AI tool usage (Notion agents, Claude, account research workflow)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Clip 3 -->
+            <div class="clip-card">
+                <div class="clip-header">
+                    <h2>Why ElevenLabs? (Constraining Answers)</h2>
+                    <span class="clip-duration">3 minutes · Interview #1</span>
+                </div>
+
+                <div class="technique-label">Constraining Answers to Get Past Surface Level</div>
+
+                <audio controls class="audio-player">
+                    <source src="projects/interview-audio/out/why-elevenlabs-deep-dive-clip.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+
+                <div class="quote">
+                    "There's one answer you can't give me, which is that we're growing very fast..."
+                </div>
+
+                <div class="what-works">
+                    <h3>What Tanner Does Well</h3>
+                    <ul>
+                        <li><strong>Pre-empts the obvious answer:</strong> "There's one answer you can't give me, which is we're growing fast" - blocks the generic response</li>
+                        <li><strong>Forces deeper thinking:</strong> By constraining the answer, requires the candidate to go beyond surface-level motivation</li>
+                        <li><strong>Gets authentic passion:</strong> The constraint reveals a thoughtful, personal answer about technology making human connection, accessibility, and leveling the playing field</li>
+                        <li><strong>Creates space for storytelling:</strong> Candidate feels permission to go long and share personal examples (grandparents in India, preference for FaceTime)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Generated with the interview-audio project</p>
+            <p>Two-voice interview audio powered by <a href="https://elevenlabs.io" target="_blank">ElevenLabs</a></p>
+            <p><a href="index.html">← Back to Projects</a></p>
+        </footer>
+    </div>
+</body>
+</html>
