@@ -34,7 +34,13 @@ Or just open the project in Claude Code, ask Claude to walk you through it, and 
 
 ```
 tannerproject/
-├── index.html              ← Pages landing page (showcases everything)
+├── index.html              ← Pages directory (chronological session list)
+├── sessions/               ← one HTML page per session, dated
+│   ├── 2026-05-05.html     ← session 01 · two-voice interview generator
+│   ├── 2026-05-10.html     ← session 02 · interview training clips
+│   ├── 2026-05-11.html     ← session 02 · build notes & feedback
+│   ├── 2026-05-20.html     ← session 03 · referral agent (paused at plan-mode)
+│   └── 2026-05-20/         ← session 03 source materials (transcripts, visuals)
 ├── README.md               ← this file
 ├── CLAUDE.md               ← umbrella guidance for Claude Code
 ├── assets/                 ← shared brand stuff (banner, future logos)

@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 03 — Referral agent · Tanner's Project</title>
+  <meta name="description" content="Session 03 (5/20): Jake and Tanner started building a referral agent from scratch. Picked the project, walked the stack, kicked off plan mode — then Tanner had a candidate conflict. A clean pause point with a plan ready to execute next time.">
+  <meta name="theme-color" content="#FAF7F2">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%99%EF%B8%8F%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.simpleicons.org" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ================================================================
+       PALETTE — warm editorial / personal (shared across sessions)
+       ================================================================ */
+    :root {
+      --bg: #FAF7F2;
+      --bg-deep: #F4EFE6;
+      --surface: #FFFFFF;
+      --surface-tint: #F8F3EA;
+      --ink: #1B1812;
+      --ink-soft: #4A463F;
+      --ink-faint: #8B867D;
+      --rule: #E8E2D6;
+      --rule-strong: #D6CFC1;
+
+      --accent: #C8541E;
+      --accent-deep: #A8421A;
+      --accent-soft: rgba(200, 84, 30, 0.10);
+      --accent-glow: rgba(200, 84, 30, 0.18);
+
+      --sage: #5C7A4A;
+      --sage-soft: rgba(92, 122, 74, 0.10);
+
+      /* Dark stack-panel palette (used inside .stack-panel) */
+      --dark-bg: #1B1812;
+      --dark-surface: #211D18;
+      --dark-surface-2: #2A251F;
+      --dark-rule: #3A352D;
+      --dark-ink: #F4EFE6;
+      --dark-ink-soft: #C7BFB2;
+      --dark-ink-faint: #877F73;
+
+      --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+      --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+      --container-narrow: 640px;
+      --container-wide: 760px;
+      --container-banner: 1100px;
+
+      --shadow-soft: 0 1px 2px rgba(27, 24, 18, 0.04), 0 4px 16px rgba(27, 24, 18, 0.04);
+      --shadow-lift: 0 4px 8px rgba(27, 24, 18, 0.06), 0 12px 32px rgba(27, 24, 18, 0.08);
+      --shadow-dark: 0 4px 12px rgba(0, 0, 0, 0.35), 0 12px 36px rgba(0, 0, 0, 0.4);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161310;
+        --bg-deep: #1F1B17;
+        --surface: #211D18;
+        --surface-tint: #2A251F;
+        --ink: #F4EFE6;
+        --ink-soft: #C7BFB2;
+        --ink-faint: #877F73;
+        --rule: #3A352D;
+        --rule-strong: #4D463C;
+        --accent: #E89260;
+        --accent-deep: #D87B45;
+        --accent-soft: rgba(232, 146, 96, 0.12);
+        --accent-glow: rgba(232, 146, 96, 0.22);
+        --sage: #95B47C;
+        --sage-soft: rgba(149, 180, 124, 0.12);
+      }
+    }
+
+    /* ================================================================
+       BASE
+       ================================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.6;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; display: block; }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.025;
+      z-index: 1;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+    @media (prefers-color-scheme: dark) {
+      body::before { mix-blend-mode: screen; opacity: 0.04; }
+    }
+
+    /* ================================================================
+       TOP NAV
+       ================================================================ */
+    .topnav {
+      max-width: var(--container-banner);
+      margin: 1.5rem auto 0;
+      padding: 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .topnav a {
+      color: var(--ink-faint);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .topnav a:hover { color: var(--accent); }
+
+    /* ================================================================
+       MASTHEAD
+       ================================================================ */
+    .masthead {
+      max-width: var(--container-wide);
+      margin: 5rem auto 0;
+      padding: 0 1.5rem;
+    }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+    .eyebrow::before {
+      content: '';
+      width: 1.75rem;
+      height: 1px;
+      background: var(--accent);
+    }
+    .title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(3rem, 9vw, 5.5rem);
+      line-height: 0.96;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+      margin-bottom: 1.75rem;
+    }
+    .title em {
+      font-style: italic;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+    }
+    .subtitle {
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      max-width: 36rem;
+    }
+
+    /* ================================================================
+       INTRO + GENERIC PROSE
+       ================================================================ */
+    .intro {
+      max-width: var(--container-narrow);
+      margin: 4rem auto 0;
+      padding: 0 1.5rem;
+    }
+    .intro .lead {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+      line-height: 1.4;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.005em;
+    }
+    .intro p {
+      color: var(--ink-soft);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+    }
+    .intro p + p { margin-top: 1rem; }
+
+    /* ================================================================
+       SECTION HEADER
+       ================================================================ */
+    .section-head {
+      max-width: var(--container-wide);
+      margin: 6rem auto 2rem;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: baseline;
+      gap: 1.25rem;
+    }
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .section-head .meta {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      flex: 1;
+      border-bottom: 1px dashed var(--rule-strong);
+      padding-bottom: 0.625rem;
+      transform: translateY(-4px);
+    }
+
+    /* ================================================================
+       THE IDEA
+       ================================================================ */
+    .idea {
+      max-width: var(--container-wide);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .idea p {
+      color: var(--ink-soft);
+      font-size: 1.0625rem;
+      line-height: 1.7;
+    }
+    .pull-quote {
+      position: relative;
+      padding: 1.5rem 2rem;
+      margin: 0.5rem 0;
+      border-left: 3px solid var(--accent);
+      background: var(--accent-soft);
+      border-radius: 0 4px 4px 0;
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.25rem;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+    .pull-quote cite {
+      display: block;
+      margin-top: 0.5rem;
+      font-style: normal;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-deep);
+    }
+    @media (prefers-color-scheme: dark) {
+      .pull-quote { background: var(--surface-tint); }
+      .pull-quote cite { color: var(--accent); }
+    }
+
+    /* ================================================================
+       STACK PANEL — dark inner card with brand-color icons
+       ================================================================ */
+    .stack-wrap {
+      max-width: var(--container-wide);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .stack-panel {
+      background: var(--dark-bg);
+      color: var(--dark-ink);
+      border-radius: 12px;
+      padding: 2.5rem 1.75rem;
+      box-shadow: var(--shadow-dark);
+      position: relative;
+      overflow: hidden;
+    }
+    .stack-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+    .stack-panel > * { position: relative; }
+
+    .stack-panel .panel-title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+      line-height: 1.1;
+      color: var(--dark-ink);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+    .stack-panel .panel-sub {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dark-ink-faint);
+      margin-bottom: 2.5rem;
+    }
+
+    .tier {
+      margin-top: 2.5rem;
+    }
+    .tier-head {
+      display: flex;
+      align-items: baseline;
+      gap: 0.875rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.625rem;
+      border-bottom: 1px dashed var(--dark-rule);
+    }
+    .tier-head .tier-num {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+    }
+    .tier-head .tier-name {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.125rem;
+      color: var(--dark-ink);
+    }
+    .tier-head .tier-hint {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dark-ink-faint);
+      margin-left: auto;
+    }
+
+    .tile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+      gap: 0.625rem;
+    }
+
+    .tile {
+      background: var(--dark-surface);
+      border: 1px solid var(--dark-rule);
+      border-radius: 8px;
+      padding: 0;
+      overflow: hidden;
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .tile:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(200, 84, 30, 0.18);
+    }
+    .tile summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 1rem 1rem 0.875rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      user-select: none;
+    }
+    .tile summary::-webkit-details-marker { display: none; }
+    .tile .tile-row {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+    .tile .tile-icon {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .tile .tile-name {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: var(--dark-ink);
+      letter-spacing: -0.005em;
+    }
+    .tile .tile-role {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dark-ink-faint);
+    }
+    .tile[open] {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft);
+    }
+    .tile .tile-detail {
+      padding: 0 1rem 1rem;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      color: var(--dark-ink-soft);
+      border-top: 1px dashed var(--dark-rule);
+      margin-top: 0.5rem;
+      padding-top: 0.875rem;
+    }
+    .tile .tile-detail strong {
+      color: var(--dark-ink);
+      font-weight: 600;
+    }
+
+    /* Tier C — mention-only, dimmer */
+    .tier--mention .tile-grid {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+    .tier--mention .tile {
+      background: transparent;
+      border-style: dashed;
+      opacity: 0.7;
+    }
+    .tier--mention .tile:hover {
+      opacity: 1;
+    }
+    .tier--mention .tile summary {
+      padding: 0.75rem 0.875rem;
+    }
+    .tier--mention .tile .tile-icon {
+      width: 18px;
+      height: 18px;
+    }
+    .tier--mention .tile .tile-name {
+      font-size: 0.8125rem;
+    }
+
+    /* Mental model — horizontal flow */
+    .flow {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: var(--dark-surface-2);
+      border-radius: 8px;
+      border: 1px solid var(--dark-rule);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .flow-node {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.875rem;
+      background: var(--dark-surface);
+      border: 1px solid var(--dark-rule);
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--dark-ink);
+    }
+    .flow-node img {
+      width: 14px;
+      height: 14px;
+    }
+    .flow-arrow {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 1rem;
+      user-select: none;
+    }
+
+    /* ================================================================
+       TIMELINE — vertical scroll-driven session arc
+       ================================================================ */
+    .timeline-wrap {
+      max-width: var(--container-wide);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      position: relative;
+    }
+    .timeline {
+      position: relative;
+      padding: 1rem 0 2rem;
+    }
+    /* Spine line (left rail on mobile, center on desktop) */
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 20px;
+      width: 2px;
+      background: linear-gradient(to bottom,
+        transparent 0%,
+        var(--rule-strong) 40px,
+        var(--rule-strong) calc(100% - 40px),
+        transparent 100%);
+      z-index: 0;
+    }
+    @media (min-width: 720px) {
+      .timeline::before {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+
+    .milestone {
+      position: relative;
+      padding: 0 0 2rem 3rem;
+    }
+
+    .milestone::before {
+      content: '';
+      position: absolute;
+      left: 13px;
+      top: 0.5rem;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--accent);
+      z-index: 1;
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+
+    @media (min-width: 720px) {
+      .milestone {
+        padding: 0 0 2.5rem 0;
+        width: calc(50% - 2rem);
+      }
+      .milestone:nth-child(odd) {
+        margin-left: 0;
+        text-align: right;
+        padding-right: 2.5rem;
+      }
+      .milestone:nth-child(odd)::before {
+        left: auto;
+        right: -2.5rem;
+        transform: translateX(50%);
+      }
+      .milestone:nth-child(even) {
+        margin-left: calc(50% + 2rem);
+        text-align: left;
+        padding-left: 2.5rem;
+      }
+      .milestone:nth-child(even)::before {
+        left: -2.5rem;
+        transform: translateX(-50%);
+      }
+      .milestone:nth-child(odd) .ms-card,
+      .milestone:nth-child(even) .ms-card {
+        text-align: left; /* keep card text always left-aligned */
+      }
+    }
+
+    .ms-time {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 0.25rem 0.625rem;
+      border-radius: 999px;
+      margin-bottom: 0.5rem;
+    }
+    .ms-card {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 1rem 1.25rem 1.125rem;
+      box-shadow: var(--shadow-soft);
+      transition: border-color 0.3s ease, transform 0.3s ease;
+      text-align: left;
+    }
+    .ms-card:hover {
+      border-color: var(--rule-strong);
+      transform: translateY(-2px);
+    }
+    .ms-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      line-height: 1.2;
+      letter-spacing: -0.005em;
+      color: var(--ink);
+      margin-bottom: 0.375rem;
+    }
+    .ms-beat {
+      font-size: 0.9375rem;
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+    .ms-quote {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px dashed var(--rule);
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--ink);
+    }
+    .ms-quote cite {
+      display: block;
+      margin-top: 0.25rem;
+      font-family: var(--font-mono);
+      font-style: normal;
+      font-size: 0.625rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    /* ================================================================
+       PAUSE CALLOUT
+       ================================================================ */
+    .pause {
+      max-width: var(--container-narrow);
+      margin: 2rem auto 0;
+      padding: 0 1.5rem;
+    }
+    .pause-card {
+      background: var(--surface);
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      padding: 2rem 2rem 1.75rem;
+      box-shadow: 0 12px 36px var(--accent-glow);
+      position: relative;
+    }
+    .pause-card::before {
+      content: 'pause';
+      position: absolute;
+      top: -0.625rem;
+      left: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--surface);
+      background: var(--accent);
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+    }
+    .pause-card h3 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 1.875rem;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 0.625rem;
+      letter-spacing: -0.01em;
+    }
+    .pause-card h3 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .pause-card p {
+      color: var(--ink-soft);
+      font-size: 1rem;
+      line-height: 1.55;
+    }
+    .pause-card .pause-meta {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--rule);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--ink-faint);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem 1.25rem;
+    }
+    .pause-card .pause-meta code {
+      color: var(--ink);
+      background: var(--surface-tint);
+      border: 1px solid var(--rule);
+      padding: 0.0625rem 0.4375rem;
+      border-radius: 3px;
+      font-size: 0.6875rem;
+    }
+
+    /* ================================================================
+       PICK-UP CARD
+       ================================================================ */
+    .pickup {
+      max-width: var(--container-wide);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .pickup-card {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 2rem;
+      box-shadow: var(--shadow-soft);
+    }
+    .pickup-card .pickup-frame {
+      font-family: var(--font-display);
+      font-size: 1.125rem;
+      line-height: 1.45;
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+    .pickup-steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+    }
+    .pickup-steps li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.875rem 1rem;
+      align-items: start;
+    }
+    .pickup-steps .step-num {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--sage);
+      min-width: 1.75rem;
+    }
+    .pickup-steps .step-body { min-width: 0; }
+    .pickup-steps .step-title {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--ink);
+      margin-bottom: 0.1875rem;
+    }
+    .pickup-steps .step-desc {
+      font-size: 0.875rem;
+      color: var(--ink-soft);
+      line-height: 1.55;
+    }
+    .pickup-steps code {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      background: var(--surface-tint);
+      border: 1px solid var(--rule);
+      padding: 0.0625rem 0.4375rem;
+      border-radius: 3px;
+      color: var(--ink);
+    }
+
+    /* ================================================================
+       SOURCE MATERIALS (low-weight link list)
+       ================================================================ */
+    .sources {
+      max-width: var(--container-wide);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .source-list {
+      list-style: none;
+      border-top: 1px solid var(--rule);
+    }
+    .source-list li { border-bottom: 1px solid var(--rule); }
+    .source-list a {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1.25rem;
+      align-items: baseline;
+      padding: 1rem 0.5rem;
+      color: var(--ink);
+      text-decoration: none;
+      transition: color 0.2s ease, padding 0.3s ease, background 0.3s ease;
+    }
+    .source-list a:hover {
+      color: var(--accent);
+      padding-left: 1.25rem;
+      background: linear-gradient(90deg, var(--accent-soft) 0%, transparent 100%);
+    }
+    .source-list .num {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      color: var(--ink-faint);
+      align-self: center;
+      min-width: 2rem;
+    }
+    .source-list .title-link {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.25rem;
+      letter-spacing: -0.005em;
+    }
+    .source-list .desc {
+      font-size: 0.8125rem;
+      color: var(--ink-soft);
+      align-self: center;
+      text-align: right;
+      max-width: 14rem;
+    }
+    @media (max-width: 640px) {
+      .source-list a { grid-template-columns: auto 1fr; gap: 1rem; }
+      .source-list .desc { display: none; }
+      .source-list .title-link { font-size: 1.0625rem; }
+    }
+
+    /* ================================================================
+       VALEDICTION + FOOTER
+       ================================================================ */
+    .valediction {
+      max-width: var(--container-narrow);
+      margin: 6rem auto 0;
+      padding: 0 1.5rem;
+      text-align: center;
+    }
+    .valediction::before,
+    .valediction::after {
+      content: '';
+      display: block;
+      width: 3rem;
+      height: 1px;
+      background: var(--rule-strong);
+      margin: 0 auto 2.5rem;
+    }
+    .valediction::after { margin: 2.5rem auto 0; }
+    .valediction p {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.5vw, 2.875rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .valediction em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .valediction .signoff {
+      display: block;
+      margin-top: 0.875rem;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    footer {
+      max-width: var(--container-wide);
+      margin: 6rem auto 3rem;
+      padding: 2.5rem 1.5rem 0;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.8125rem;
+      color: var(--ink-faint);
+    }
+    footer .signature {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.25rem;
+      color: var(--ink-soft);
+    }
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+    }
+    footer a:hover { text-decoration: underline; }
+
+    /* ================================================================
+       PAGE-LOAD CHOREOGRAPHY (intro elements)
+       ================================================================ */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .topnav, .masthead, .intro, .section-head, .idea, .stack-wrap, .pause, .pickup, .sources, .valediction, footer {
+      opacity: 0;
+      animation: rise 0.7s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
+    }
+    .topnav       { animation-delay: 0.00s; }
+    .masthead     { animation-delay: 0.12s; }
+    .intro        { animation-delay: 0.25s; }
+    .section-head { animation-delay: 0.40s; }
+    .idea, .stack-wrap, .pause, .pickup, .sources { animation-delay: 0.50s; }
+    .valediction  { animation-delay: 0.65s; }
+    footer        { animation-delay: 0.80s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+
+    /* ================================================================
+       MOBILE TWEAKS
+       ================================================================ */
+    @media (max-width: 640px) {
+      .stack-panel { padding: 2rem 1.25rem; }
+      .pause-card { padding: 1.75rem 1.5rem 1.5rem; }
+      .pickup-card { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top nav -->
+  <nav class="topnav">
+    <a href="../index.html">← Tanner's Project</a>
+    <a href="https://github.com/jakeat11labs/tannerproject">Source ↗</a>
+  </nav>
+
+  <!-- Masthead -->
+  <header class="masthead">
+    <p class="eyebrow">Session 03 · 5/20 · jake + tanner</p>
+    <h1 class="title">Referral agent<br><em>— something fresh</em></h1>
+    <p class="subtitle">picking the project, walking the stack, kicking off plan mode — paused at 00:47</p>
+  </header>
+
+  <!-- Intro -->
+  <section class="intro">
+    <p class="lead">
+      This week was different. No project carried over from last time — Tanner picked something new, and the rule of the session was: take it from nothing to a plan, in real time, together.
+    </p>
+    <p>
+      Twenty-five minutes of brainstorming the idea. Five minutes deciding the stack. Ten minutes watching Claude Code draft the architecture in plan mode. Then a candidate call popped up and we paused — with the plan ready to run next time.
+    </p>
+  </section>
+
+  <!-- The idea -->
+  <div class="section-head">
+    <h2>The idea</h2>
+    <span class="meta">tanner · picked · it</span>
+  </div>
+
+  <section class="idea">
+    <p>
+      A referral agent for ElevenLabs hiring. An employee says <em>"I have a friend who'd be great at X — what roles fit?"</em> and the agent talks back, asks a few questions to sharpen what "great at X" really means, then surfaces matching openings. Over time, it gets smarter — pulling from a knowledge base of what "good" looks like for each role, informed by hiring managers and recruiters.
+    </p>
+    <blockquote class="pull-quote">
+      "I would love to build an agent via API because I haven't done that before — that pulls in from a knowledge base what good looks like… an internal employee-only resource informed by hiring managers, enhanced by recruiters."
+      <cite>— Tanner, ~00:14</cite>
+    </blockquote>
+    <p>
+      Jake's nudge mid-pitch: <em>"What does the UX look like?"</em> — pulling the design back from data-architecture into something a person actually uses. That reframe shaped everything that came after.
+    </p>
+  </section>
+
+  <!-- The stack -->
+  <div class="section-head">
+    <h2>The stack</h2>
+    <span class="meta">how · it · fits · together</span>
+  </div>
+
+  <section class="stack-wrap">
+    <div class="stack-panel">
+      <h3 class="panel-title">How this stack fits together</h3>
+      <p class="panel-sub">what each part is, where it fits, why you might hear about it</p>
+
+      <!-- Tier A: foundation -->
+      <div class="tier">
+        <div class="tier-head">
+          <span class="tier-num">01</span>
+          <span class="tier-name">The simple stack</span>
+          <span class="tier-hint">tap a tile to expand</span>
+        </div>
+        <div class="tile-grid">
+
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/shadcnui/FFFFFF" alt="shadcn/ui" loading="lazy" width="22" height="22">
+                <span class="tile-name">shadcn/ui</span>
+              </div>
+              <span class="tile-role">Component library</span>
+            </summary>
+            <p class="tile-detail">Reusable interface elements — buttons, forms, dialogs — pre-styled and accessible. <strong>You copy them into your project</strong> instead of installing them as a package, so you can tweak anything.</p>
+          </details>
+
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/tailwindcss/06B6D4" alt="Tailwind CSS" loading="lazy" width="22" height="22">
+                <span class="tile-name">Tailwind CSS</span>
+              </div>
+              <span class="tile-role">Styling system</span>
+            </summary>
+            <p class="tile-detail">A utility-first styling system. Instead of writing custom CSS files, you stack tiny class names directly on elements (<code style="color:#fff;background:rgba(255,255,255,0.08);padding:0 4px;border-radius:3px;">p-4 rounded-lg</code>). Fast to iterate, easy to keep consistent.</p>
+          </details>
+
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/nextdotjs/FFFFFF" alt="Next.js" loading="lazy" width="22" height="22">
+                <span class="tile-name">Next.js</span>
+              </div>
+              <span class="tile-role">Framework</span>
+            </summary>
+            <p class="tile-detail">The all-in-one framework. Handles pages, routing, server-side rendering, and API routes — frontend and backend in one project. <strong>Built by Vercel</strong>, which is part of why we paired them.</p>
+          </details>
+
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/react/61DAFB" alt="React" loading="lazy" width="22" height="22">
+                <span class="tile-name">React</span>
+              </div>
+              <span class="tile-role">UI library</span>
+            </summary>
+            <p class="tile-detail">The library underneath Next.js. Lets you build interfaces out of components that react to user input. Next.js is a flavor of React with everything else bolted on.</p>
+          </details>
+
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/typescript/3178C6" alt="TypeScript" loading="lazy" width="22" height="22">
+                <span class="tile-name">TypeScript</span>
+              </div>
+              <span class="tile-role">Language</span>
+            </summary>
+            <p class="tile-detail">JavaScript with type checking. Catches a whole class of bugs before they ship — <em>"this function expects a string, you gave it a number."</em> The standard for production web apps.</p>
+          </details>
+
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/nodedotjs/5FA04E" alt="Node.js" loading="lazy" width="22" height="22">
+                <span class="tile-name">Node.js</span>
+              </div>
+              <span class="tile-role">Runtime</span>
+            </summary>
+            <p class="tile-detail">The engine that runs JavaScript outside the browser — on your laptop, on Vercel's servers. Without it, all the above wouldn't work in development.</p>
+          </details>
+
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/vercel/FFFFFF" alt="Vercel" loading="lazy" width="22" height="22">
+                <span class="tile-name">Vercel</span>
+              </div>
+              <span class="tile-role">Hosting + deploy</span>
+            </summary>
+            <p class="tile-detail">Where the live app actually runs. Push a commit to GitHub, Vercel builds and deploys automatically with a preview URL. Made by the same people as Next.js.</p>
+          </details>
+
+        </div>
+      </div>
+
+      <!-- Tier B: supporting services -->
+      <div class="tier">
+        <div class="tier-head">
+          <span class="tier-num">02</span>
+          <span class="tier-name">Supporting services</span>
+          <span class="tier-hint">the data + voice layer</span>
+        </div>
+        <div class="tile-grid">
+
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/supabase/3FCF8E" alt="Supabase" loading="lazy" width="22" height="22">
+                <span class="tile-name">Supabase</span>
+              </div>
+              <span class="tile-role">Database + auth</span>
+            </summary>
+            <p class="tile-detail">Postgres database with auth, file storage, and a clean SDK on top. Where we'll store the post-call analysis, recruiter best-practices, and the running list of "what good looks like" per role.</p>
+          </details>
+
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/elevenlabs/FFFFFF" alt="ElevenLabs" loading="lazy" width="22" height="22">
+                <span class="tile-name">ElevenLabs</span>
+              </div>
+              <span class="tile-role">Voice + agents</span>
+            </summary>
+            <p class="tile-detail">The agent itself. The conversation runs through an ElevenLabs Conversational AI agent — voice on top, real-time transcript, post-call analysis to extract structured data into Supabase.</p>
+          </details>
+
+        </div>
+      </div>
+
+      <!-- Tier C: alternatives -->
+      <div class="tier tier--mention">
+        <div class="tier-head">
+          <span class="tier-num">03</span>
+          <span class="tier-name">Other options you might hear about</span>
+          <span class="tier-hint">not what we used — but you'll see them</span>
+        </div>
+        <div class="tile-grid">
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/vite/646CFF" alt="Vite" loading="lazy" width="18" height="18">
+                <span class="tile-name">Vite</span>
+              </div>
+            </summary>
+            <p class="tile-detail">Front-end-only alternative to Next.js — faster dev server, but you have to wire your own backend.</p>
+          </details>
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/css/663399" alt="Plain CSS" loading="lazy" width="18" height="18">
+                <span class="tile-name">Plain CSS</span>
+              </div>
+            </summary>
+            <p class="tile-detail">Hand-written stylesheets, no utilities. Fine for small projects; tedious at scale.</p>
+          </details>
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/mui/007FFF" alt="Material UI" loading="lazy" width="18" height="18">
+                <span class="tile-name">MUI / Chakra</span>
+              </div>
+            </summary>
+            <p class="tile-detail">Pre-built component libraries that ship as packages. Faster to start, harder to customize than shadcn.</p>
+          </details>
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/netlify/00C7B7" alt="Netlify" loading="lazy" width="18" height="18">
+                <span class="tile-name">Netlify</span>
+              </div>
+            </summary>
+            <p class="tile-detail">Other hosting platforms. Vercel-equivalent for most use cases, but less Next.js-native.</p>
+          </details>
+          <details class="tile">
+            <summary>
+              <div class="tile-row">
+                <img class="tile-icon" src="https://cdn.simpleicons.org/render/46E3B7" alt="Render" loading="lazy" width="18" height="18">
+                <span class="tile-name">Render / Railway</span>
+              </div>
+            </summary>
+            <p class="tile-detail">Hosting for apps that need long-running processes or custom containers — beyond what Vercel's serverless model handles.</p>
+          </details>
+        </div>
+      </div>
+
+      <!-- Mental model: horizontal flow -->
+      <div class="tier">
+        <div class="tier-head">
+          <span class="tier-num">04</span>
+          <span class="tier-name">Mental model</span>
+          <span class="tier-hint">how data moves</span>
+        </div>
+        <div class="flow">
+          <span class="flow-node">Browser</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node"><img src="https://cdn.simpleicons.org/nextdotjs/FFFFFF" alt="" loading="lazy" width="14" height="14">Next.js</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node"><img src="https://cdn.simpleicons.org/elevenlabs/FFFFFF" alt="" loading="lazy" width="14" height="14">ElevenLabs agent</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node"><img src="https://cdn.simpleicons.org/supabase/3FCF8E" alt="" loading="lazy" width="14" height="14">Supabase</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node"><img src="https://cdn.simpleicons.org/vercel/FFFFFF" alt="" loading="lazy" width="14" height="14">Vercel (hosted)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <div class="section-head">
+    <h2>The session</h2>
+    <span class="meta">in · order · 00:14 → 00:47</span>
+  </div>
+
+  <section class="timeline-wrap">
+    <div class="timeline">
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">00:14</span>
+          <h3 class="ms-title">"Let's build something new"</h3>
+          <p class="ms-beat">Jake suggests they take an idea from nothing to live, together — so Tanner can see the process, not just the result.</p>
+          <div class="ms-quote">"We can just build it and you could just see my process, and we'll just think of a thing and take it from nothing to live."<cite>— jake</cite></div>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">00:14</span>
+          <h3 class="ms-title">Tanner pitches the referral agent</h3>
+          <p class="ms-beat">A knowledge-base-driven agent that knows what "good" looks like per role — informed by hiring managers, enhanced by recruiters, learns over time. Employees can ask: <em>"I know someone with X skills — what fits?"</em></p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">00:16</span>
+          <h3 class="ms-title">A second idea, parking-lotted</h3>
+          <p class="ms-beat">Interview training for senior hires — consistent pitch, evaluated interviewers. Saved for a later session; the referral agent is the one we're building today.</p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">00:18</span>
+          <h3 class="ms-title">"What does the UX look like?"</h3>
+          <p class="ms-beat">Jake nudges Tanner from data-architecture into user experience. Before deciding what data to store, decide what the person sees.</p>
+          <div class="ms-quote">"Like what's your user experience? So when someone like… you kind of start to think about what's the experience like?"<cite>— jake</cite></div>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">00:24</span>
+          <h3 class="ms-title">The mental model lands</h3>
+          <p class="ms-beat">All this stuff is just a database plus intelligence on top. Once that clicks, the architecture writes itself.</p>
+          <div class="ms-quote">"All this stuff really is, is just a database — and then intelligence on top. So an agent on top of it."<cite>— jake</cite></div>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">00:25</span>
+          <h3 class="ms-title">Open Claude Code, name the project</h3>
+          <p class="ms-beat">Started typing <code>interview-agent</code>, Tanner suggested <code>referral-agent</code>, Jake renamed it live. Five seconds, no friction.</p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">00:30</span>
+          <h3 class="ms-title">Pick the framework: Next.js on Vercel</h3>
+          <p class="ms-beat">Next.js is what Vercel builds and what most of ElevenLabs' marketing pages run on. The pairing is the path of least resistance.</p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">00:35</span>
+          <h3 class="ms-title">Stack the skills</h3>
+          <p class="ms-beat">Load <code>/vercel:nextjs</code>, <code>/frontend-design</code>, and <code>/agents</code> so the agent bakes the cake the right way — Next.js best-practices, polished UI defaults, ElevenLabs agent SDK conventions.</p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">00:37</span>
+          <h3 class="ms-title">Toggle into plan mode</h3>
+          <p class="ms-beat">Shift-tab into plan mode. Plan mode forces introspection and research before any code gets written — for greenfield work, that's the difference between a thought-out architecture and chaos.</p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">00:39</span>
+          <h3 class="ms-title">The scoping prompt</h3>
+          <p class="ms-beat">Jake writes the full brief in one go: agent that interviews referrers, knowledge base of openings + best practices, recommendation back to the user, nice UI on the public side, admin dashboard with post-call analysis, Supabase on the back, trends over time.</p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">00:42</span>
+          <h3 class="ms-title">Plan renders</h3>
+          <p class="ms-beat">Claude returns the architecture: Next.js App Router + TS + React 19 + Tailwind + shadcn + Supabase + ElevenLabs SDK. Tanner reads through the tech-stack section as Jake explains each piece in plain English.</p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">00:47</span>
+          <h3 class="ms-title">Tanner has a candidate call</h3>
+          <p class="ms-beat">Conflict popped up. We pause here — the plan is ready, the stack is decided, the skills are loaded. Next time: hand the plan to Claude and run it.</p>
+          <div class="ms-quote">"I do want to continue this because I'm learning so much from you, but I also know I'm the worst teammate in the world."<cite>— tanner</cite></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Pause callout -->
+  <section class="pause">
+    <div class="pause-card">
+      <h3>We <em>paused here.</em></h3>
+      <p>This was a clean stop point — the architecture plan had just rendered, nothing was half-built, nothing was broken. Next session we resume by re-loading the same three skills, opening the saved plan, and asking Claude to execute it.</p>
+      <div class="pause-meta">
+        <span>paused at <code>00:47</code></span>
+        <span>plan saved · <code>~/.claude/plans/peppy-wondering-sunset.md</code></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pick up next session -->
+  <div class="section-head">
+    <h2>Pick up next session</h2>
+    <span class="meta">three · concrete · steps</span>
+  </div>
+
+  <section class="pickup">
+    <div class="pickup-card">
+      <p class="pickup-frame">Watching the agent get built, with checkpoints to stop and ask questions. No new decisions to make — the architecture is settled.</p>
+      <ol class="pickup-steps">
+        <li>
+          <span class="step-num">01</span>
+          <div class="step-body">
+            <p class="step-title">Re-load the skills</p>
+            <p class="step-desc">Run <code>/vercel:nextjs</code>, <code>/frontend-design</code>, and <code>/agents</code> in Claude Code so the assistant has the same context it had last time.</p>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">02</span>
+          <div class="step-body">
+            <p class="step-title">Open the saved plan</p>
+            <p class="step-desc">The architecture plan lives at <code>~/.claude/plans/peppy-wondering-sunset.md</code>. Worth a quick re-read so we both remember the shape of what we're building.</p>
+          </div>
+        </li>
+        <li>
+          <span class="step-num">03</span>
+          <div class="step-body">
+            <p class="step-title">Execute</p>
+            <p class="step-desc">Hand the plan to Claude. Jake will narrate each phase — scaffold, then Supabase schema, then the agent wiring, then the UI — and pause for questions wherever something is worth slowing down on.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Source materials -->
+  <div class="section-head">
+    <h2>Source materials</h2>
+    <span class="meta">raw · in · the · repo</span>
+  </div>
+
+  <section class="sources">
+    <ul class="source-list">
+      <li>
+        <a href="https://github.com/jakeat11labs/tannerproject/blob/main/sessions/2026-05-20/raw-transcript/Tanner%20__%20Jake%20-%202026_05_20%2014_50%20PDT%20-%20Notes%20by%20Gemini.md">
+          <span class="num">01</span>
+          <span class="title-link">Raw conversation transcript</span>
+          <span class="desc">Gemini transcript of the live call.</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/jakeat11labs/tannerproject/blob/main/sessions/2026-05-20/claude-code-transcript/5-20-26session-transcript.md">
+          <span class="num">02</span>
+          <span class="title-link">Claude Code session log</span>
+          <span class="desc">The plan-mode kickoff and what Claude actually did.</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/jakeat11labs/tannerproject/blob/main/sessions/2026-05-20/visuals/TheStack.png">
+          <span class="num">03</span>
+          <span class="title-link">Reference visual</span>
+          <span class="desc">"How This Stack Fits Together" — the original image we recreated above.</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Valediction -->
+  <aside class="valediction">
+    <p>Plan's ready. <em>See you Tuesday.</em><span class="signoff">— jake</span></p>
+  </aside>
+
+  <!-- Footer -->
+  <footer>
+    <span class="signature">Made together — jake + tanner.</span>
+    <span><a href="https://github.com/jakeat11labs/tannerproject">jakeat11labs/tannerproject ↗</a></span>
+  </footer>
+
+</body>
+</html>

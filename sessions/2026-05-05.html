@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tanner's Project — Sessions Directory</title>
-  <meta name="description" content="A running directory of things Jake and Tanner build together during their 1:1 sessions. Each session is its own page — what was built, what was learned, and how the loop closed.">
+  <title>Tanner's Project — Two-Voice Interview Generator</title>
+  <meta name="description" content="A personal project space. Currently featuring: a two-voice interview generator that turns timestamped transcripts into one MP3 with two distinct ElevenLabs v4 voices.">
   <meta name="theme-color" content="#FAF7F2">
   <meta property="og:title" content="Tanner's Project">
-  <meta property="og:description" content="A directory of 1:1 sessions between Jake and Tanner — half learning, half real engineering.">
+  <meta property="og:description" content="Two-voice interview generator using ElevenLabs v4 expressive — built collaboratively in Claude Code.">
   <meta property="og:image" content="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/assets/tanners-project-banner.png">
   <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%99%EF%B8%8F%3C/text%3E%3C/svg%3E">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,15 +31,15 @@
       --rule: #E8E2D6;
       --rule-strong: #D6CFC1;
 
-      --accent: #C8541E;
+      --accent: #C8541E;            /* terra-cotta — primary */
       --accent-deep: #A8421A;
       --accent-soft: rgba(200, 84, 30, 0.10);
       --accent-glow: rgba(200, 84, 30, 0.18);
 
-      --session-1: #5C7A4A;          /* sage olive */
-      --session-2: #C8541E;          /* terra-cotta */
-      --session-3: #8B7355;          /* warm sand */
-      --session-4: #6B5B8E;          /* muted lavender */
+      --letter-c: #C8541E;          /* terra-cotta */
+      --letter-a: #5C7A4A;          /* sage olive */
+      --letter-b: #8B7355;          /* warm sand */
+      --letter-d: #6B5B8E;          /* muted lavender */
 
       --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
       --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
@@ -68,10 +68,10 @@
         --accent-deep: #D87B45;
         --accent-soft: rgba(232, 146, 96, 0.12);
         --accent-glow: rgba(232, 146, 96, 0.22);
-        --session-1: #95B47C;
-        --session-2: #E89260;
-        --session-3: #C9B391;
-        --session-4: #A99BC4;
+        --letter-c: #E89260;
+        --letter-a: #95B47C;
+        --letter-b: #C9B391;
+        --letter-d: #A99BC4;
       }
     }
 
@@ -79,7 +79,9 @@
        RESET + BASE
        ============================================================ */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     html { -webkit-text-size-adjust: 100%; }
+
     body {
       font-family: var(--font-body);
       font-size: 17px;
@@ -91,9 +93,13 @@
       text-rendering: optimizeLegibility;
       overflow-x: hidden;
     }
+
     img { max-width: 100%; display: block; }
     button, input { font: inherit; }
 
+    /* ============================================================
+       TEXTURE — warm grain on the cream
+       ============================================================ */
     body::before {
       content: '';
       position: fixed;
@@ -109,30 +115,7 @@
     }
 
     /* ============================================================
-       TOP NAV
-       ============================================================ */
-    .topnav {
-      max-width: var(--container-banner);
-      margin: 1.5rem auto 0;
-      padding: 0 1.5rem;
-      display: flex;
-      justify-content: flex-end;
-      gap: 1.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      font-weight: 500;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-    }
-    .topnav a {
-      color: var(--ink-faint);
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-    .topnav a:hover { color: var(--accent); }
-
-    /* ============================================================
-       HERO BANNER
+       HERO BANNER — full-bleed image on top
        ============================================================ */
     .banner {
       width: 100%;
@@ -150,7 +133,7 @@
     }
 
     /* ============================================================
-       MASTHEAD
+       MASTHEAD — title block
        ============================================================ */
     .masthead {
       max-width: var(--container-wide);
@@ -176,6 +159,7 @@
       height: 1px;
       background: var(--accent);
     }
+
     .title {
       font-family: var(--font-display);
       font-weight: 400;
@@ -190,6 +174,7 @@
       color: var(--accent);
       letter-spacing: -0.04em;
     }
+
     .subtitle {
       font-family: var(--font-body);
       font-size: 0.875rem;
@@ -201,7 +186,7 @@
     }
 
     /* ============================================================
-       INTRO
+       INTRO LEAD
        ============================================================ */
     .intro {
       max-width: var(--container-narrow);
@@ -225,7 +210,7 @@
     .intro p + p { margin-top: 1rem; }
 
     /* ============================================================
-       SECTION HEAD
+       SECTION HEADERS
        ============================================================ */
     .section-head {
       max-width: var(--container-wide);
@@ -257,9 +242,9 @@
     }
 
     /* ============================================================
-       SESSIONS DIRECTORY
+       SAMPLE CARDS — audio player INSIDE each card
        ============================================================ */
-    .sessions {
+    .samples {
       max-width: var(--container-wide);
       margin: 0 auto;
       padding: 0 1.5rem;
@@ -268,7 +253,7 @@
       gap: 1.25rem;
     }
 
-    .session-card {
+    .sample {
       position: relative;
       background: var(--surface);
       border: 1px solid var(--rule);
@@ -276,37 +261,17 @@
       padding: 2rem 2rem 1.75rem;
       transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
     }
-    .session-card:hover {
-      border-color: var(--accent);
-      box-shadow: var(--shadow-lift);
-      transform: translateY(-2px);
-    }
-    /* Title anchor spans the card so the whole thing is clickable. */
-    .session-title a {
-      color: inherit;
-      text-decoration: none;
-      transition: color 0.2s ease;
-    }
-    .session-title a:hover { color: var(--accent); }
-    .session-title a::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 6px;
-    }
-    /* Inner links sit above the title overlay so they're independently clickable. */
-    .session-inside a,
-    .session-cta a {
-      position: relative;
-      z-index: 1;
+    .sample:hover {
+      border-color: var(--rule-strong);
+      box-shadow: var(--shadow-soft);
     }
 
-    .session-card--latest {
+    .sample--featured {
       border-color: var(--accent);
       box-shadow: 0 0 0 1px var(--accent), 0 12px 36px var(--accent-glow);
     }
-    .session-card--latest::before {
-      content: 'latest';
+    .sample--featured::before {
+      content: 'recommended';
       position: absolute;
       top: -0.625rem;
       right: 1.5rem;
@@ -321,39 +286,31 @@
       border-radius: 999px;
     }
 
-    .session-grid {
+    .sample-grid {
       display: grid;
       grid-template-columns: auto 1fr;
-      gap: 0.75rem 1.75rem;
+      gap: 1.25rem 1.75rem;
       align-items: start;
     }
 
-    .session-num {
+    .sample-letter {
       font-family: var(--font-display);
       font-style: italic;
       font-size: 5rem;
       line-height: 0.85;
-      grid-row: span 3;
+      color: var(--letter-c);
+      grid-row: span 2;
       align-self: start;
       transform: translateY(-0.25rem);
       user-select: none;
-      color: var(--session-1);
     }
-    .session-card[data-num="02"] .session-num { color: var(--session-2); }
-    .session-card[data-num="03"] .session-num { color: var(--session-3); }
-    .session-card[data-num="04"] .session-num { color: var(--session-4); }
+    .sample[data-id="A"] .sample-letter { color: var(--letter-a); }
+    .sample[data-id="B"] .sample-letter { color: var(--letter-b); }
+    .sample[data-id="D"] .sample-letter { color: var(--letter-d); }
 
-    .session-meta {
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      font-weight: 500;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-      margin-bottom: 0.25rem;
-    }
+    .sample-head { min-width: 0; }
 
-    .session-title {
+    .sample-title {
       font-family: var(--font-display);
       font-weight: 400;
       font-size: 1.875rem;
@@ -362,13 +319,13 @@
       letter-spacing: -0.01em;
       margin-bottom: 0.5rem;
     }
-    .session-title em {
+    .sample-title em {
       font-style: italic;
       color: var(--ink-soft);
       font-size: 0.95em;
     }
 
-    .session-desc {
+    .sample-desc {
       color: var(--ink-soft);
       font-size: 1rem;
       line-height: 1.55;
@@ -376,17 +333,45 @@
       max-width: 36rem;
     }
 
-    .session-inside {
-      grid-column: 2;
-      padding-top: 1rem;
-      border-top: 1px dashed var(--rule);
-      position: relative;
+    .sample-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem 1.25rem;
+      gap: 0 1.5rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
     }
-    .session-inside::before {
-      content: '▸ inside';
+    .sample-meta div {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+    }
+    .sample-meta dt {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .sample-meta dd { color: var(--ink); }
+    .sample-meta code {
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      background: var(--surface-tint);
+      border: 1px solid var(--rule);
+      padding: 0.0625rem 0.4375rem;
+      border-radius: 3px;
+      color: var(--ink);
+    }
+
+    .sample-audio {
+      grid-column: 1 / -1;
+      position: relative;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--rule);
+    }
+    .sample-audio::before {
+      content: '▸ play';
       position: absolute;
       top: -0.5rem;
       left: 0;
@@ -399,37 +384,47 @@
       background: var(--surface);
       padding-right: 0.625rem;
     }
-    .session-inside .tag {
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      color: var(--ink-soft);
-      background: var(--surface-tint);
-      border: 1px solid var(--rule);
-      padding: 0.25rem 0.625rem;
+    audio {
+      width: 100%;
+      display: block;
+      margin-top: 0.75rem;
       border-radius: 999px;
-      margin-top: 0.625rem;
-      text-decoration: none;
-      transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-    }
-    a.tag:hover {
-      color: var(--accent);
-      border-color: var(--accent);
-      background: var(--accent-soft);
-    }
-
-    .session-cta {
-      grid-column: 2;
-      margin-top: 1rem;
-      font-family: var(--font-mono);
-      font-size: 0.6875rem;
-      font-weight: 500;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--accent);
     }
 
     /* ============================================================
-       READ FURTHER
+       LISTEN-ORDER CALLOUT
+       ============================================================ */
+    .callout {
+      max-width: var(--container-narrow);
+      margin: 3rem auto 0;
+      padding: 1.75rem 2rem;
+      border-left: 3px solid var(--accent);
+      background: var(--accent-soft);
+      border-radius: 0 4px 4px 0;
+      font-family: var(--font-display);
+      font-size: 1.125rem;
+      line-height: 1.55;
+      color: var(--ink);
+      font-style: italic;
+    }
+    .callout strong {
+      font-family: var(--font-body);
+      font-style: normal;
+      font-weight: 600;
+      color: var(--accent-deep);
+      text-transform: uppercase;
+      font-size: 0.6875rem;
+      letter-spacing: 0.14em;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    @media (prefers-color-scheme: dark) {
+      .callout { background: var(--surface-tint); }
+      .callout strong { color: var(--accent); }
+    }
+
+    /* ============================================================
+       READ MORE — extensible section
        ============================================================ */
     .more {
       max-width: var(--container-wide);
@@ -488,7 +483,7 @@
     }
 
     /* ============================================================
-       VALEDICTION
+       VALEDICTION — closing message before footer
        ============================================================ */
     .valediction {
       max-width: var(--container-narrow);
@@ -506,7 +501,9 @@
       background: var(--rule-strong);
       margin: 0 auto 2.5rem;
     }
-    .valediction::after { margin: 2.5rem auto 0; }
+    .valediction::after {
+      margin: 2.5rem auto 0;
+    }
     .valediction p {
       font-family: var(--font-display);
       font-weight: 400;
@@ -569,19 +566,20 @@
       from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .topnav, .banner, .masthead, .intro, .section-head, .sessions, .more, .valediction, footer {
+    /* Samples are intentionally NOT animated — audio players need to be
+       interactable immediately. Decorative sections fade up around them. */
+    .banner, .masthead, .intro, .section-head, .callout, .more, .valediction, footer {
       opacity: 0;
       animation: rise 0.7s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
     }
-    .topnav       { animation-delay: 0.00s; }
     .banner       { animation-delay: 0.05s; }
-    .masthead     { animation-delay: 0.18s; }
-    .intro        { animation-delay: 0.30s; }
-    .section-head { animation-delay: 0.42s; }
-    .sessions     { animation-delay: 0.52s; }
-    .more         { animation-delay: 0.70s; }
-    .valediction  { animation-delay: 0.85s; }
-    footer        { animation-delay: 0.95s; }
+    .masthead     { animation-delay: 0.20s; }
+    .intro        { animation-delay: 0.35s; }
+    .section-head { animation-delay: 0.50s; }
+    .callout      { animation-delay: 0.65s; }
+    .more         { animation-delay: 0.78s; }
+    .valediction  { animation-delay: 0.90s; }
+    footer        { animation-delay: 1.00s; }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -595,11 +593,12 @@
        MOBILE
        ============================================================ */
     @media (max-width: 640px) {
-      .session-card { padding: 1.5rem 1.5rem 1.25rem; }
-      .session-grid { gap: 0.5rem 1.25rem; }
-      .session-num { font-size: 4rem; }
-      .session-title { font-size: 1.5rem; }
-      .session-inside, .session-cta { grid-column: 1 / -1; }
+      .sample { padding: 1.5rem 1.5rem 1.25rem; }
+      .sample-grid { gap: 0.875rem 1.25rem; }
+      .sample-letter { font-size: 4rem; }
+      .sample-title { font-size: 1.5rem; }
+      .sample-meta { gap: 0.5rem 1.25rem; }
+      .callout { font-size: 1rem; padding: 1.25rem 1.5rem; }
       .banner { padding: 0; margin: 1rem 0 0; }
       .banner img { border-radius: 0; }
     }
@@ -608,104 +607,147 @@
 <body>
 
   <!-- Top nav -->
-  <nav class="topnav">
-    <a href="https://github.com/jakeat11labs/tannerproject">Source ↗</a>
+  <nav style="max-width: var(--container-banner); margin: 1.5rem auto 0; padding: 0 1.5rem; display: flex; justify-content: space-between; gap: 1.5rem; font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;">
+    <a href="../index.html" style="color: var(--ink-faint); text-decoration: none; transition: color 0.2s ease;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--ink-faint)'">← Tanner's Project</a>
+    <a href="https://github.com/jakeat11labs/tannerproject" style="color: var(--ink-faint); text-decoration: none; transition: color 0.2s ease;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--ink-faint)'">Source ↗</a>
   </nav>
 
   <!-- Hero banner -->
   <section class="banner">
-    <img src="assets/tanners-project-banner.png"
+    <img src="../assets/tanners-project-banner.png"
          alt="Tanner's Project banner with Jake and Tanner cartoon avatars"
          width="1881" height="836" />
   </section>
 
   <!-- Masthead -->
   <header class="masthead">
-    <p class="eyebrow">1:1 sessions · jake + tanner</p>
-    <h1 class="title">Tanner<em>'s</em> Project</h1>
-    <p class="subtitle">a running directory of what we built together — one page per session</p>
+    <p class="eyebrow">Session 01 · 5/5 · jake + tanner</p>
+    <h1 class="title">Two-voice <em>interview</em></h1>
+    <p class="subtitle">turning timestamped transcripts into a single mp3 · elevenlabs v4 expressive</p>
   </header>
 
   <!-- Intro -->
   <section class="intro">
     <p class="lead">
-      A home for the things Jake and Tanner build together during their 1:1 sessions — half learning, half real engineering. Each session lives on its own page below: what was built, what was learned, and how the loop closed.
+      A home for the things Jake and Tanner build together during their 1:1 sessions — half learning, half real engineering. Starting with a way to turn timestamped two-speaker transcripts into a single MP3 that sounds like the conversation actually happened.
     </p>
     <p>
-      Newest at the top. Click into any session to listen to what came out of it, read the build notes, or scroll through the side-by-side feedback.
+      Different voices for each speaker. Natural pacing. Audio tags like <code>[laughs]</code> and <code>[whispers]</code> rendered properly. Built collaboratively in Claude Code — the entire dev session, including all the wrong turns and tool switches, is preserved in the repo for you to read through.
+    </p>
+    <p>
+      Below: four sample outputs from the same transcript, generated with different mode + model combinations. Listen and compare.
     </p>
   </section>
 
-  <!-- Sessions directory -->
+  <!-- Samples -->
   <div class="section-head">
-    <h2>Sessions</h2>
-    <span class="meta">newest · first</span>
+    <h2>Listen for yourself</h2>
+    <span class="meta">four · samples · same · transcript</span>
   </div>
 
-  <section class="sessions">
+  <section class="samples">
 
-    <!-- Session 03 — Referral agent (live 1:1, plan-mode kickoff) -->
-    <article class="session-card session-card--latest" data-num="03">
-      <div class="session-grid">
-        <div class="session-num">03</div>
-        <div>
-          <p class="session-meta">5/20 build · paused at 00:47</p>
-          <h3 class="session-title"><a href="sessions/2026-05-20.html">Referral agent <em>— something fresh</em></a></h3>
+    <!-- C — Default, Recommended -->
+    <article class="sample sample--featured" data-id="C">
+      <div class="sample-grid">
+        <div class="sample-letter">C</div>
+        <div class="sample-head">
+          <h3 class="sample-title">Segment + v4 <em>— the default</em></h3>
+          <p class="sample-desc">Newest expressive model. Tighter pacing, confident delivery. The recommended path — what the project's CLI runs by default.</p>
+          <dl class="sample-meta">
+            <div><dt>Mode</dt><dd><code>segment</code></dd></div>
+            <div><dt>Model</dt><dd><code>eleven_v4</code></dd></div>
+            <div><dt>Duration</dt><dd>2:11</dd></div>
+          </dl>
         </div>
-        <p class="session-desc" style="grid-column: 2;">
-          Tanner picked the project: a hiring referral agent. Twenty-five minutes deciding the idea, ten minutes walking the stack, ten minutes watching Claude draft the architecture in plan mode. Then a candidate call pulled Tanner away — clean stop point with a plan ready to run.
-        </p>
-        <div class="session-inside">
-          <span class="tag">next.js on vercel</span>
-          <span class="tag">elevenlabs agent + supabase</span>
-          <span class="tag">paused at plan-mode</span>
+        <div class="sample-audio">
+          <audio controls preload="metadata"
+                 src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/projects/interview-audio/samples/C-segment-v4.mp3">
+            Your browser doesn't support inline audio.
+            <a href="../projects/interview-audio/samples/C-segment-v4.mp3">Download the MP3</a>.
+          </audio>
         </div>
-        <p class="session-cta"><a href="sessions/2026-05-20.html" style="color: var(--accent); text-decoration: none;">read the session →</a></p>
       </div>
     </article>
 
-    <!-- Session 02 — Interview training clips + feedback loop -->
-    <article class="session-card" data-num="02">
-      <div class="session-grid">
-        <div class="session-num">02</div>
-        <div>
-          <p class="session-meta">5/10 build → 5/11 feedback</p>
-          <h3 class="session-title"><a href="sessions/2026-05-11.html">Interview training clips <em>— and the loop</em></a></h3>
+    <!-- A — Dialogue v3 -->
+    <article class="sample" data-id="A">
+      <div class="sample-grid">
+        <div class="sample-letter">A</div>
+        <div class="sample-head">
+          <h3 class="sample-title">Dialogue + v3</h3>
+          <p class="sample-desc">Whole conversation generated as one performance. Real turn-taking, prosody match across speakers. Useful when reactive moments matter — laugh-on-laugh, interruptions, tonal shifts.</p>
+          <dl class="sample-meta">
+            <div><dt>Mode</dt><dd><code>dialogue</code></dd></div>
+            <div><dt>Model</dt><dd><code>eleven_v3</code></dd></div>
+            <div><dt>Duration</dt><dd>2:32</dd></div>
+          </dl>
         </div>
-        <p class="session-desc" style="grid-column: 2;">
-          Generated three two-voice training clips from real interview techniques — challenging reframes, scope-broadening follow-ups, constraining answers. Then closed the loop with side-by-side build notes and feedback on what was confusing.
-        </p>
-        <div class="session-inside">
-          <a href="sessions/2026-05-10.html" class="tag">3 training clips →</a>
-          <a href="sessions/2026-05-11.html" class="tag">notes &amp; feedback →</a>
+        <div class="sample-audio">
+          <audio controls preload="metadata"
+                 src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/projects/interview-audio/samples/A-dialogue-v3.mp3">
+            Your browser doesn't support inline audio.
+            <a href="../projects/interview-audio/samples/A-dialogue-v3.mp3">Download the MP3</a>.
+          </audio>
         </div>
-        <p class="session-cta"><a href="sessions/2026-05-11.html" style="color: var(--accent); text-decoration: none;">read the session →</a></p>
       </div>
     </article>
 
-    <!-- Session 01 — Two-voice interview generator -->
-    <article class="session-card" data-num="01">
-      <div class="session-grid">
-        <div class="session-num">01</div>
-        <div>
-          <p class="session-meta">5/5 build</p>
-          <h3 class="session-title"><a href="sessions/2026-05-05.html">Two-voice <em>interview generator</em></a></h3>
+    <!-- D — Dialogue v4 (the experimental "fast" variant) -->
+    <article class="sample" data-id="D">
+      <div class="sample-grid">
+        <div class="sample-letter">D</div>
+        <div class="sample-head">
+          <h3 class="sample-title">Dialogue + v4 <em>— experimental</em></h3>
+          <p class="sample-desc">Dialogue endpoint running on v4 instead of v3. Same cross-speaker awareness as A, with v4's tighter pacing. Notably faster — almost half the duration of A. Lands somewhere between "confident" and "rushed" depending on your taste; included for completeness.</p>
+          <dl class="sample-meta">
+            <div><dt>Mode</dt><dd><code>dialogue</code></dd></div>
+            <div><dt>Model</dt><dd><code>eleven_v4</code></dd></div>
+            <div><dt>Duration</dt><dd>1:20</dd></div>
+          </dl>
         </div>
-        <p class="session-desc" style="grid-column: 2;">
-          Turned timestamped two-speaker transcripts into a single MP3 with distinct ElevenLabs v4 voices. Includes four sample outputs comparing segment vs. dialogue modes, v3 vs. v4. The whole dev conversation is preserved in the repo.
-        </p>
-        <div class="session-inside">
-          <span class="tag">4 audio samples</span>
-          <span class="tag">segment + v4 default</span>
-          <span class="tag">elevenlabs v4 expressive</span>
+        <div class="sample-audio">
+          <audio controls preload="metadata"
+                 src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/projects/interview-audio/samples/D-dialogue-v4.mp3">
+            Your browser doesn't support inline audio.
+            <a href="../projects/interview-audio/samples/D-dialogue-v4.mp3">Download the MP3</a>.
+          </audio>
         </div>
-        <p class="session-cta"><a href="sessions/2026-05-05.html" style="color: var(--accent); text-decoration: none;">read the session →</a></p>
+      </div>
+    </article>
+
+    <!-- B — Segment v3 (baseline) -->
+    <article class="sample" data-id="B">
+      <div class="sample-grid">
+        <div class="sample-letter">B</div>
+        <div class="sample-head">
+          <h3 class="sample-title">Segment + v3 <em>— baseline</em></h3>
+          <p class="sample-desc">Original v3 baseline, per-line stitched. Comparison reference — the version we started with before the v4 upgrade.</p>
+          <dl class="sample-meta">
+            <div><dt>Mode</dt><dd><code>segment</code></dd></div>
+            <div><dt>Model</dt><dd><code>eleven_v3</code></dd></div>
+            <div><dt>Duration</dt><dd>2:28</dd></div>
+          </dl>
+        </div>
+        <div class="sample-audio">
+          <audio controls preload="metadata"
+                 src="https://raw.githubusercontent.com/jakeat11labs/tannerproject/main/projects/interview-audio/samples/B-segment-v3.mp3">
+            Your browser doesn't support inline audio.
+            <a href="../projects/interview-audio/samples/B-segment-v3.mp3">Download the MP3</a>.
+          </audio>
+        </div>
       </div>
     </article>
 
   </section>
 
-  <!-- Read further -->
+  <!-- Listen order callout -->
+  <aside class="callout">
+    <strong>Recommended listen order</strong>
+    B → A → C → D. B is the v3 baseline; A is dialogue mode on v3; C is segment mode on v4 (the default); D pushes both upgrades together — dialogue mode running on v4, which gets fast.
+  </aside>
+
+  <!-- More -->
   <div class="section-head">
     <h2>Read further</h2>
     <span class="meta">repo · receipts · references</span>
@@ -723,7 +765,7 @@
       <li>
         <a href="https://github.com/jakeat11labs/tannerproject/blob/main/projects/interview-audio/CONVERSATION.md">
           <span class="num">02</span>
-          <span class="title-link">How session 01 was built</span>
+          <span class="title-link">How this was built</span>
           <span class="desc">A narrative walkthrough of the dev session, with lessons learned.</span>
         </a>
       </li>
@@ -731,7 +773,7 @@
         <a href="https://github.com/jakeat11labs/tannerproject/blob/main/projects/interview-audio/CONVERSATION-RAW.md">
           <span class="num">03</span>
           <span class="title-link">Verbatim transcript</span>
-          <span class="desc">Every message, every reply, every tool call from session 01.</span>
+          <span class="desc">Every message, every reply, every tool call from the session.</span>
         </a>
       </li>
       <li>
@@ -739,6 +781,13 @@
           <span class="num">04</span>
           <span class="title-link">Audio tag reference</span>
           <span class="desc">Every official ElevenLabs v3 audio tag, categorized.</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/jakeat11labs/tannerproject/blob/main/projects/interview-audio/docs/RESEARCH-NATURAL-AUDIO.md">
+          <span class="num">05</span>
+          <span class="title-link">Multi-voice TTS research</span>
+          <span class="desc">How other open-source projects approach natural-sounding multi-voice audio.</span>
         </a>
       </li>
     </ul>

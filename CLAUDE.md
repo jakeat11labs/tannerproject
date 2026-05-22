@@ -33,7 +33,12 @@ If the user's request doesn't make clear which project they mean, ask. Don't gue
 
 ## Pages site
 
-`index.html` at root is the GitHub Pages landing page (live at https://jakeat11labs.github.io/tannerproject/). It showcases the projects under `projects/`. When a new project lands, add a card to `index.html` — there's a clearly-marked sample-card pattern used currently for the audio project that's easy to copy.
+`index.html` at root is the GitHub Pages landing page (live at https://jakeat11labs.github.io/tannerproject/). It's a **session directory** — a chronological list of session cards, newest first. Each session is its own page under `sessions/<YYYY-MM-DD>.html`.
+
+When a new session happens:
+1. Create `sessions/<YYYY-MM-DD>.html` for the build output (or notes/feedback page). Asset paths from inside `sessions/` are `../assets/`, `../projects/...`.
+2. Add a new `<article class="session-card">` block to `index.html` — copy the existing pattern. Bump `data-num` and place newest first. Move the previous `--latest` modifier to the new top card.
+3. If multiple pages belong to one session (e.g., build + feedback), add each as a separate tag link inside that card's `.session-inside` block.
 
 `.nojekyll` is present so Pages serves files as-is, without Jekyll processing.
 
@@ -43,7 +48,13 @@ If the user's request doesn't make clear which project they mean, ask. Don't gue
 tannerproject/
 ├── README.md                   ← umbrella README (project list, tools)
 ├── CLAUDE.md                   ← this file
-├── index.html                  ← Pages landing
+├── index.html                  ← Pages directory (session list)
+├── sessions/                   ← one HTML page per session, dated
+│   ├── 2026-05-05.html         ← session 01 · two-voice interview generator
+│   ├── 2026-05-10.html         ← session 02 · interview training clips
+│   ├── 2026-05-11.html         ← session 02 · build notes & feedback
+│   ├── 2026-05-20.html         ← session 03 · referral agent (paused at plan-mode)
+│   └── 2026-05-20/             ← session 03 source materials (transcripts, visuals)
 ├── .nojekyll
 ├── LICENSE
 ├── assets/                     ← shared brand
