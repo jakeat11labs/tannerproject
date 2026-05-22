@@ -370,6 +370,116 @@
       gap: 0.625rem;
     }
 
+    /* The tower — vertical stack visualization, foundation at the bottom */
+    .tower {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      padding: 0.75rem 0;
+      margin: 0 auto;
+      max-width: 480px;
+    }
+    .tower-label {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--dark-ink-faint);
+      text-align: center;
+      padding: 0.25rem 0;
+    }
+    .tower-label--top    { color: var(--accent); }
+    .tower-label--bottom { color: var(--dark-ink-faint); border-top: 1px dashed var(--dark-rule); margin-top: 0.4rem; padding-top: 0.625rem; }
+    .tower-label--top    { border-bottom: 1px dashed var(--dark-rule); margin-bottom: 0.4rem; padding-bottom: 0.625rem; }
+
+    .tower-tile {
+      position: relative;
+      background: var(--dark-surface);
+      border: 1px solid var(--dark-rule);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .tower-tile:hover {
+      border-color: var(--accent);
+      transform: translateX(2px);
+      box-shadow: 0 6px 18px rgba(200, 84, 30, 0.18);
+    }
+    .tower-tile[open] {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft);
+    }
+    .tower-tile summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 0.75rem 1rem;
+      display: grid;
+      grid-template-columns: auto auto 1fr auto;
+      align-items: center;
+      gap: 0.875rem;
+      user-select: none;
+    }
+    .tower-tile summary::-webkit-details-marker { display: none; }
+    .tower-tile .layer-num {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      color: var(--dark-ink-faint);
+      min-width: 1.5rem;
+    }
+    .tower-tile .tile-icon {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .tower-tile .tile-main {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+      min-width: 0;
+    }
+    .tower-tile .tile-name {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--dark-ink);
+    }
+    .tower-tile .tile-role {
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dark-ink-faint);
+    }
+    .tower-tile .tile-toggle {
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      color: var(--dark-ink-faint);
+      transition: transform 0.2s ease;
+    }
+    .tower-tile[open] .tile-toggle {
+      transform: rotate(45deg);
+      color: var(--accent);
+    }
+    .tower-tile .tile-detail {
+      padding: 0 1rem 0.875rem 3.875rem;
+      font-size: 0.8125rem;
+      line-height: 1.55;
+      color: var(--dark-ink-soft);
+      border-top: 1px dashed var(--dark-rule);
+      padding-top: 0.75rem;
+    }
+    .tower-tile .tile-detail strong { color: var(--dark-ink); font-weight: 600; }
+
+    @media (max-width: 640px) {
+      .tower-tile summary { grid-template-columns: auto auto 1fr; gap: 0.5rem; padding: 0.625rem 0.75rem; }
+      .tower-tile .tile-toggle { display: none; }
+      .tower-tile .tile-detail { padding-left: 2.75rem; }
+    }
+
     .tile {
       background: var(--dark-surface);
       border: 1px solid var(--dark-rule);
@@ -493,6 +603,69 @@
       color: var(--accent);
       font-size: 1rem;
       user-select: none;
+    }
+
+    /* ================================================================
+       DOWNLOAD CTA — sits below the stack panel
+       ================================================================ */
+    .download-cta {
+      max-width: var(--container-wide);
+      margin: 1.25rem auto 0;
+      padding: 0 1.5rem;
+    }
+    .download-cta a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1.25rem 0.875rem 1.125rem;
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--ink);
+      box-shadow: 0 4px 16px var(--accent-glow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .download-cta a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--accent-glow);
+    }
+    .download-cta .pdf-icon {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      background: var(--accent);
+      color: var(--surface);
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+    .download-cta .download-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.0625rem;
+    }
+    .download-cta .download-title {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: var(--ink);
+    }
+    .download-cta .download-sub {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.12em;
+      color: var(--ink-faint);
+    }
+    .download-cta .download-arrow {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 1.125rem;
+      margin-left: 0.375rem;
     }
 
     /* ================================================================
@@ -990,92 +1163,109 @@
       <h3 class="panel-title">How this stack fits together</h3>
       <p class="panel-sub">what each part is, where it fits, why you might hear about it</p>
 
-      <!-- Tier A: foundation -->
+      <!-- Tier A: the tower — read it bottom-up. Foundation = Node.js, peak = Vercel. -->
       <div class="tier">
         <div class="tier-head">
           <span class="tier-num">01</span>
-          <span class="tier-name">The simple stack</span>
-          <span class="tier-hint">tap a tile to expand</span>
+          <span class="tier-name">The stack — read bottom-up</span>
+          <span class="tier-hint">tap a layer to expand</span>
         </div>
-        <div class="tile-grid">
 
-          <details class="tile">
+        <div class="tower">
+          <div class="tower-label tower-label--top">▲ what users see · the peak</div>
+
+          <details class="tower-tile">
             <summary>
-              <div class="tile-row">
-                <img class="tile-icon" src="https://cdn.simpleicons.org/shadcnui/FFFFFF" alt="shadcn/ui" loading="lazy" width="22" height="22">
+              <span class="layer-num">07</span>
+              <img class="tile-icon" src="https://cdn.simpleicons.org/shadcnui/FFFFFF" alt="shadcn/ui" loading="lazy" width="22" height="22">
+              <div class="tile-main">
                 <span class="tile-name">shadcn/ui</span>
+                <span class="tile-role">Component library</span>
               </div>
-              <span class="tile-role">Component library</span>
+              <span class="tile-toggle" aria-hidden="true">+</span>
             </summary>
             <p class="tile-detail">Reusable interface elements — buttons, forms, dialogs — pre-styled and accessible. <strong>You copy them into your project</strong> instead of installing them as a package, so you can tweak anything.</p>
           </details>
 
-          <details class="tile">
+          <details class="tower-tile">
             <summary>
-              <div class="tile-row">
-                <img class="tile-icon" src="https://cdn.simpleicons.org/tailwindcss/06B6D4" alt="Tailwind CSS" loading="lazy" width="22" height="22">
+              <span class="layer-num">06</span>
+              <img class="tile-icon" src="https://cdn.simpleicons.org/tailwindcss/06B6D4" alt="Tailwind CSS" loading="lazy" width="22" height="22">
+              <div class="tile-main">
                 <span class="tile-name">Tailwind CSS</span>
+                <span class="tile-role">Styling system</span>
               </div>
-              <span class="tile-role">Styling system</span>
+              <span class="tile-toggle" aria-hidden="true">+</span>
             </summary>
             <p class="tile-detail">A utility-first styling system. Instead of writing custom CSS files, you stack tiny class names directly on elements (<code style="color:#fff;background:rgba(255,255,255,0.08);padding:0 4px;border-radius:3px;">p-4 rounded-lg</code>). Fast to iterate, easy to keep consistent.</p>
           </details>
 
-          <details class="tile">
+          <details class="tower-tile">
             <summary>
-              <div class="tile-row">
-                <img class="tile-icon" src="https://cdn.simpleicons.org/nextdotjs/FFFFFF" alt="Next.js" loading="lazy" width="22" height="22">
+              <span class="layer-num">05</span>
+              <img class="tile-icon" src="https://cdn.simpleicons.org/nextdotjs/FFFFFF" alt="Next.js" loading="lazy" width="22" height="22">
+              <div class="tile-main">
                 <span class="tile-name">Next.js</span>
+                <span class="tile-role">Framework</span>
               </div>
-              <span class="tile-role">Framework</span>
+              <span class="tile-toggle" aria-hidden="true">+</span>
             </summary>
-            <p class="tile-detail">The all-in-one framework. Handles pages, routing, server-side rendering, and API routes — frontend and backend in one project. <strong>Built by Vercel</strong>, which is part of why we paired them.</p>
+            <p class="tile-detail">The all-in-one framework. Handles pages, routing, server-side rendering, and API routes — frontend and backend in one project. <strong>Built on top of React</strong>, with everything else bolted on.</p>
           </details>
 
-          <details class="tile">
+          <details class="tower-tile">
             <summary>
-              <div class="tile-row">
-                <img class="tile-icon" src="https://cdn.simpleicons.org/react/61DAFB" alt="React" loading="lazy" width="22" height="22">
+              <span class="layer-num">04</span>
+              <img class="tile-icon" src="https://cdn.simpleicons.org/react/61DAFB" alt="React" loading="lazy" width="22" height="22">
+              <div class="tile-main">
                 <span class="tile-name">React</span>
+                <span class="tile-role">UI library</span>
               </div>
-              <span class="tile-role">UI library</span>
+              <span class="tile-toggle" aria-hidden="true">+</span>
             </summary>
-            <p class="tile-detail">The library underneath Next.js. Lets you build interfaces out of components that react to user input. Next.js is a flavor of React with everything else bolted on.</p>
+            <p class="tile-detail">The library Next.js is built on. Lets you build interfaces out of components that react to user input. Next.js is a flavor of React with everything else bolted on.</p>
           </details>
 
-          <details class="tile">
+          <details class="tower-tile">
             <summary>
-              <div class="tile-row">
-                <img class="tile-icon" src="https://cdn.simpleicons.org/typescript/3178C6" alt="TypeScript" loading="lazy" width="22" height="22">
+              <span class="layer-num">03</span>
+              <img class="tile-icon" src="https://cdn.simpleicons.org/typescript/3178C6" alt="TypeScript" loading="lazy" width="22" height="22">
+              <div class="tile-main">
                 <span class="tile-name">TypeScript</span>
+                <span class="tile-role">Language</span>
               </div>
-              <span class="tile-role">Language</span>
+              <span class="tile-toggle" aria-hidden="true">+</span>
             </summary>
             <p class="tile-detail">JavaScript with type checking. Catches a whole class of bugs before they ship — <em>"this function expects a string, you gave it a number."</em> The standard for production web apps.</p>
           </details>
 
-          <details class="tile">
+          <details class="tower-tile">
             <summary>
-              <div class="tile-row">
-                <img class="tile-icon" src="https://cdn.simpleicons.org/nodedotjs/5FA04E" alt="Node.js" loading="lazy" width="22" height="22">
+              <span class="layer-num">02</span>
+              <img class="tile-icon" src="https://cdn.simpleicons.org/nodedotjs/5FA04E" alt="Node.js" loading="lazy" width="22" height="22">
+              <div class="tile-main">
                 <span class="tile-name">Node.js</span>
+                <span class="tile-role">Runtime</span>
               </div>
-              <span class="tile-role">Runtime</span>
+              <span class="tile-toggle" aria-hidden="true">+</span>
             </summary>
-            <p class="tile-detail">The engine that runs JavaScript outside the browser — on your laptop, on Vercel's servers. Without it, all the above wouldn't work in development.</p>
+            <p class="tile-detail">The engine that runs JavaScript outside the browser — on your laptop, on Vercel's servers. Everything above this is JavaScript-based and needs Node.js to actually run.</p>
           </details>
 
-          <details class="tile">
+          <details class="tower-tile">
             <summary>
-              <div class="tile-row">
-                <img class="tile-icon" src="https://cdn.simpleicons.org/vercel/FFFFFF" alt="Vercel" loading="lazy" width="22" height="22">
+              <span class="layer-num">01</span>
+              <img class="tile-icon" src="https://cdn.simpleicons.org/vercel/FFFFFF" alt="Vercel" loading="lazy" width="22" height="22">
+              <div class="tile-main">
                 <span class="tile-name">Vercel</span>
+                <span class="tile-role">Platform · the foundation</span>
               </div>
-              <span class="tile-role">Hosting + deploy</span>
+              <span class="tile-toggle" aria-hidden="true">+</span>
             </summary>
-            <p class="tile-detail">Where the live app actually runs. Push a commit to GitHub, Vercel builds and deploys automatically with a preview URL. Made by the same people as Next.js.</p>
+            <p class="tile-detail">The platform everything sits on. Push a commit to GitHub, Vercel builds the whole stack and serves it to users. <strong>Made by the same people as Next.js</strong> — which is part of why we paired them.</p>
           </details>
 
+          <div class="tower-label tower-label--bottom">▼ the platform · everything deploys here</div>
         </div>
       </div>
 
@@ -1190,6 +1380,18 @@
       </div>
     </div>
   </section>
+
+  <!-- Download CTA -->
+  <div class="download-cta">
+    <a href="../assets/the-stack-quick-reference.pdf" download="the-stack-quick-reference.pdf">
+      <span class="pdf-icon" aria-hidden="true">PDF</span>
+      <span class="download-text">
+        <span class="download-title">Download the quick reference</span>
+        <span class="download-sub">one-page · pdf · 6.7 mb</span>
+      </span>
+      <span class="download-arrow" aria-hidden="true">↓</span>
+    </a>
+  </div>
 
   <!-- Timeline -->
   <div class="section-head">
@@ -1377,6 +1579,13 @@
           <span class="num">03</span>
           <span class="title-link">Reference visual</span>
           <span class="desc">"How This Stack Fits Together" — the original image we recreated above.</span>
+        </a>
+      </li>
+      <li>
+        <a href="../assets/the-stack-quick-reference.pdf" download="the-stack-quick-reference.pdf">
+          <span class="num">04</span>
+          <span class="title-link">Stack quick reference (PDF)</span>
+          <span class="desc">One-page printable cheat sheet of the stack we picked.</span>
         </a>
       </li>
     </ul>

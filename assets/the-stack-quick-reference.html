@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>How This Stack Fits Together — Quick Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.simpleicons.org" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       PRINT-FIRST QUICK REFERENCE — US Letter 8.5 × 11 portrait
+       The simple stack rendered as a literal stack (foundation up)
+       ============================================================ */
+    @page { size: letter portrait; margin: 0; }
+
+    :root {
+      --bg: #FAF7F2;
+      --ink: #1B1812;
+      --ink-soft: #4A463F;
+      --ink-faint: #8B867D;
+      --rule: #E8E2D6;
+      --rule-strong: #D6CFC1;
+      --accent: #C8541E;
+      --accent-soft: rgba(200, 84, 30, 0.10);
+
+      --dark-bg: #1B1812;
+      --dark-surface: #211D18;
+      --dark-rule: #3A352D;
+      --dark-ink: #F4EFE6;
+      --dark-ink-soft: #C7BFB2;
+      --dark-ink-faint: #877F73;
+
+      --font-display: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+      --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 8.5in;
+      min-height: 11in;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      font-size: 10pt;
+      line-height: 1.45;
+    }
+
+    .page {
+      width: 8.5in;
+      height: 11in;
+      padding: 0.45in 0.5in 0.4in;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      gap: 0.18in;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+
+    /* ============================================================
+       HEADER
+       ============================================================ */
+    .head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 0.3in;
+      padding-bottom: 0.12in;
+      border-bottom: 1.5px solid var(--ink);
+    }
+    .head .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 7.5pt;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.04in;
+    }
+    .head .title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: 30pt;
+      line-height: 1;
+      letter-spacing: -0.015em;
+    }
+    .head .title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .head .meta {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 7pt;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      line-height: 1.6;
+    }
+    .head .meta strong { color: var(--ink); font-weight: 500; }
+
+    .sublead {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 12pt;
+      color: var(--ink-soft);
+      line-height: 1.4;
+      max-width: 6.2in;
+    }
+
+    /* ============================================================
+       MAIN STACK CARD — two columns
+       Left: the literal tower (foundation up)
+       Right: supporting services + mental model
+       ============================================================ */
+    .stack {
+      background: var(--dark-bg);
+      color: var(--dark-ink);
+      border-radius: 0.08in;
+      padding: 0.22in;
+      display: grid;
+      grid-template-columns: minmax(2.85in, 1fr) 1fr;
+      gap: 0.2in;
+      position: relative;
+      box-shadow: 0 6px 22px rgba(27, 24, 18, 0.18);
+    }
+    .stack::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      pointer-events: none;
+    }
+    .stack > * { position: relative; }
+
+    .tier-head {
+      display: flex;
+      align-items: baseline;
+      gap: 0.08in;
+      padding-bottom: 0.05in;
+      border-bottom: 1px dashed var(--dark-rule);
+      margin-bottom: 0.08in;
+    }
+    .tier-num {
+      font-family: var(--font-mono);
+      font-size: 7pt;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+    }
+    .tier-name {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 11pt;
+      color: var(--dark-ink);
+    }
+    .tier-hint {
+      font-family: var(--font-mono);
+      font-size: 6pt;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dark-ink-faint);
+      margin-left: auto;
+    }
+
+    /* ============================================================
+       THE TOWER (left column)
+       ============================================================ */
+    .tower-col { display: flex; flex-direction: column; }
+    .tower {
+      display: flex;
+      flex-direction: column;
+      gap: 3pt;
+    }
+    .tower-cap {
+      font-family: var(--font-mono);
+      font-size: 6pt;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 4pt 0;
+    }
+    .tower-cap--top {
+      color: var(--accent);
+      border-bottom: 1px dashed var(--dark-rule);
+      margin-bottom: 4pt;
+    }
+    .tower-cap--bottom {
+      color: var(--dark-ink-faint);
+      border-top: 1px dashed var(--dark-rule);
+      margin-top: 4pt;
+    }
+
+    .layer {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      align-items: center;
+      gap: 7pt;
+      padding: 5pt 8pt;
+      background: var(--dark-surface);
+      border: 0.5px solid var(--dark-rule);
+      border-radius: 4pt;
+    }
+    .layer .layer-num {
+      font-family: var(--font-mono);
+      font-size: 6.5pt;
+      letter-spacing: 0.14em;
+      color: var(--dark-ink-faint);
+      min-width: 10pt;
+    }
+    .layer img {
+      width: 14pt;
+      height: 14pt;
+      object-fit: contain;
+    }
+    .layer .layer-name {
+      font-weight: 600;
+      font-size: 9.5pt;
+      color: var(--dark-ink);
+      line-height: 1.1;
+    }
+    .layer .layer-role {
+      font-family: var(--font-mono);
+      font-size: 5.75pt;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 1pt;
+    }
+    .layer .layer-text {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* ============================================================
+       RIGHT COLUMN: supporting services + mental model + flow
+       ============================================================ */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 0.12in;
+    }
+    .right-section {
+      display: flex;
+      flex-direction: column;
+      gap: 5pt;
+    }
+    .svc {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: start;
+      gap: 8pt;
+      padding: 7pt 8pt;
+      background: var(--dark-surface);
+      border: 0.5px solid var(--dark-rule);
+      border-radius: 4pt;
+    }
+    .svc img { width: 14pt; height: 14pt; margin-top: 1pt; }
+    .svc .svc-name { font-weight: 600; font-size: 9.5pt; color: var(--dark-ink); }
+    .svc .svc-role {
+      font-family: var(--font-mono);
+      font-size: 5.75pt;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 1pt 0 3pt;
+    }
+    .svc .svc-desc {
+      font-size: 7.75pt;
+      line-height: 1.4;
+      color: var(--dark-ink-soft);
+    }
+
+    .flow {
+      padding: 7pt 8pt;
+      background: var(--dark-surface);
+      border: 0.5px solid var(--dark-rule);
+      border-radius: 4pt;
+    }
+    .flow h4 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 9pt;
+      color: var(--dark-ink);
+      margin-bottom: 5pt;
+    }
+    .flow-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 3pt;
+    }
+    .flow-node {
+      display: inline-flex;
+      align-items: center;
+      gap: 3pt;
+      font-family: var(--font-mono);
+      font-size: 6.5pt;
+      color: var(--dark-ink);
+      background: var(--dark-bg);
+      border: 0.5px solid var(--dark-rule);
+      border-radius: 999px;
+      padding: 2pt 6pt;
+    }
+    .flow-node img { width: 8pt; height: 8pt; }
+    .flow-arrow { color: var(--accent); font-family: var(--font-mono); font-size: 8pt; }
+
+    .ladder {
+      padding: 7pt 8pt;
+      background: var(--dark-surface);
+      border: 0.5px solid var(--dark-rule);
+      border-radius: 4pt;
+    }
+    .ladder h4 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 9pt;
+      color: var(--dark-ink);
+      margin-bottom: 4pt;
+    }
+    .ladder p {
+      font-size: 7.5pt;
+      line-height: 1.45;
+      color: var(--dark-ink-soft);
+    }
+    .ladder p + p { margin-top: 3pt; }
+
+    /* ============================================================
+       FOOTER — alternatives mentioned
+       ============================================================ */
+    .foot {
+      border-top: 1px solid var(--rule-strong);
+      padding-top: 0.1in;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.2in;
+      align-items: end;
+      font-size: 8pt;
+      color: var(--ink-faint);
+    }
+    .foot .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.04in 0.2in;
+    }
+    .foot .legend strong {
+      font-family: var(--font-mono);
+      font-size: 7pt;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+      margin-right: 4pt;
+    }
+    .foot .alt {
+      display: inline-flex;
+      gap: 3pt;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 7pt;
+      color: var(--ink-soft);
+    }
+    .foot .alt img { width: 8pt; height: 8pt; }
+    .foot .sig {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 10pt;
+      color: var(--ink-soft);
+      text-align: right;
+    }
+    .foot .sig .url {
+      display: block;
+      font-family: var(--font-mono);
+      font-style: normal;
+      font-size: 6.5pt;
+      letter-spacing: 0.1em;
+      color: var(--ink-faint);
+      margin-top: 1pt;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Header -->
+    <header class="head">
+      <div>
+        <p class="eyebrow">Quick reference · jake + tanner</p>
+        <h1 class="title">How this stack fits <em>together</em></h1>
+      </div>
+      <div class="meta">
+        <strong>Tanner's Project</strong><br>
+        Session 03 · 5/20<br>
+        Referral agent
+      </div>
+    </header>
+
+    <!-- Sublead -->
+    <p class="sublead">The simple stack — read from the bottom up. Vercel is the platform everything sits on; shadcn/ui at the top is what users actually see.</p>
+
+    <!-- Stack card: tower on the left, services + mental model on the right -->
+    <div class="stack">
+
+      <!-- LEFT: the literal tower -->
+      <div class="tower-col">
+        <div class="tier-head">
+          <span class="tier-num">01</span>
+          <span class="tier-name">The stack</span>
+          <span class="tier-hint">foundation → peak</span>
+        </div>
+
+        <div class="tower">
+          <div class="tower-cap tower-cap--top">▲ what users see · the peak</div>
+
+          <div class="layer">
+            <span class="layer-num">07</span>
+            <img src="https://cdn.simpleicons.org/shadcnui/FFFFFF" alt="">
+            <div class="layer-text">
+              <span class="layer-name">shadcn/ui</span>
+              <span class="layer-role">Component library</span>
+            </div>
+          </div>
+
+          <div class="layer">
+            <span class="layer-num">06</span>
+            <img src="https://cdn.simpleicons.org/tailwindcss/06B6D4" alt="">
+            <div class="layer-text">
+              <span class="layer-name">Tailwind CSS</span>
+              <span class="layer-role">Styling system</span>
+            </div>
+          </div>
+
+          <div class="layer">
+            <span class="layer-num">05</span>
+            <img src="https://cdn.simpleicons.org/nextdotjs/FFFFFF" alt="">
+            <div class="layer-text">
+              <span class="layer-name">Next.js</span>
+              <span class="layer-role">Framework</span>
+            </div>
+          </div>
+
+          <div class="layer">
+            <span class="layer-num">04</span>
+            <img src="https://cdn.simpleicons.org/react/61DAFB" alt="">
+            <div class="layer-text">
+              <span class="layer-name">React</span>
+              <span class="layer-role">UI library</span>
+            </div>
+          </div>
+
+          <div class="layer">
+            <span class="layer-num">03</span>
+            <img src="https://cdn.simpleicons.org/typescript/3178C6" alt="">
+            <div class="layer-text">
+              <span class="layer-name">TypeScript</span>
+              <span class="layer-role">Language</span>
+            </div>
+          </div>
+
+          <div class="layer">
+            <span class="layer-num">02</span>
+            <img src="https://cdn.simpleicons.org/nodedotjs/5FA04E" alt="">
+            <div class="layer-text">
+              <span class="layer-name">Node.js</span>
+              <span class="layer-role">Runtime</span>
+            </div>
+          </div>
+
+          <div class="layer">
+            <span class="layer-num">01</span>
+            <img src="https://cdn.simpleicons.org/vercel/FFFFFF" alt="">
+            <div class="layer-text">
+              <span class="layer-name">Vercel</span>
+              <span class="layer-role">Platform · the foundation</span>
+            </div>
+          </div>
+
+          <div class="tower-cap tower-cap--bottom">▼ the platform · everything deploys here</div>
+        </div>
+      </div>
+
+      <!-- RIGHT: supporting services + mental model + ladder read -->
+      <div class="right-col">
+
+        <div class="right-section">
+          <div class="tier-head">
+            <span class="tier-num">02</span>
+            <span class="tier-name">Supporting services</span>
+            <span class="tier-hint">data + voice</span>
+          </div>
+
+          <div class="svc">
+            <img src="https://cdn.simpleicons.org/supabase/3FCF8E" alt="">
+            <div>
+              <div class="svc-name">Supabase</div>
+              <div class="svc-role">Database + auth</div>
+              <div class="svc-desc">Postgres database with auth, file storage, and a clean SDK. Stores the post-call analysis, recruiter best-practices, and the running list of "what good looks like" per role.</div>
+            </div>
+          </div>
+
+          <div class="svc">
+            <img src="https://cdn.simpleicons.org/elevenlabs/FFFFFF" alt="">
+            <div>
+              <div class="svc-name">ElevenLabs</div>
+              <div class="svc-role">Voice + agents</div>
+              <div class="svc-desc">The agent itself. Conversation runs through an ElevenLabs Conversational AI agent — voice, real-time transcript, post-call analysis to extract structured data into Supabase.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ladder">
+          <h4>How to read the stack</h4>
+          <p><strong style="color: var(--dark-ink);">Bottom-up.</strong> Vercel is the platform — the ground everything deploys to. Node.js runs on top of it, providing the JavaScript runtime. TypeScript adds types; React adds components; Next.js wraps React into a full framework.</p>
+          <p>Tailwind and shadcn/ui sit at the top — they're what users actually see and interact with. Each layer depends on the ones below it.</p>
+        </div>
+
+        <div class="flow">
+          <h4>Mental model — how data moves</h4>
+          <div class="flow-row">
+            <span class="flow-node">Browser</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-node"><img src="https://cdn.simpleicons.org/nextdotjs/FFFFFF" alt="">Next.js</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-node"><img src="https://cdn.simpleicons.org/elevenlabs/FFFFFF" alt="">Agent</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-node"><img src="https://cdn.simpleicons.org/supabase/3FCF8E" alt="">Supabase</span>
+            <span class="flow-arrow">→</span>
+            <span class="flow-node"><img src="https://cdn.simpleicons.org/vercel/FFFFFF" alt="">Vercel</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer: alternatives mentioned -->
+    <footer class="foot">
+      <div class="legend">
+        <span><strong>Other options you might hear about</strong></span>
+        <span class="alt"><img src="https://cdn.simpleicons.org/vite/646CFF" alt="">Vite</span>
+        <span class="alt"><img src="https://cdn.simpleicons.org/css/663399" alt="">Plain CSS</span>
+        <span class="alt"><img src="https://cdn.simpleicons.org/mui/007FFF" alt="">MUI / Chakra</span>
+        <span class="alt"><img src="https://cdn.simpleicons.org/netlify/00C7B7" alt="">Netlify</span>
+        <span class="alt"><img src="https://cdn.simpleicons.org/render/46E3B7" alt="">Render / Railway</span>
+      </div>
+      <div class="sig">
+        Tanner's Project
+        <span class="url">jakeat11labs.github.io/tannerproject</span>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>
