@@ -225,6 +225,243 @@
     .intro p + p { margin-top: 1rem; }
 
     /* ============================================================
+       LEARNING TRACKER
+       ============================================================ */
+    .tracker {
+      max-width: var(--container-banner);
+      margin: 4rem auto 0;
+      padding: 0 1.5rem;
+    }
+    .tracker-top {
+      max-width: var(--container-wide);
+      margin: 0 auto 1.25rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+    .tracker-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.375rem;
+    }
+    .tracker-title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-style: italic;
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .tracker-context {
+      max-width: 34rem;
+      margin-top: 0.625rem;
+      color: var(--ink-soft);
+      font-size: 0.9375rem;
+      line-height: 1.55;
+    }
+    .tracker-note {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      text-align: right;
+      flex: 0 0 auto;
+    }
+    .tracker-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      min-width: 0;
+    }
+    .tracker-list {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-soft);
+      min-width: 0;
+    }
+    .tracker-list h3 {
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 0.875rem;
+    }
+    .tracker-list ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .tracker-item {
+      display: grid;
+      grid-template-columns: 1.125rem 1fr;
+      gap: 0.625rem;
+      align-items: start;
+      color: var(--ink-soft);
+      font-size: 0.9375rem;
+      line-height: 1.45;
+      min-width: 0;
+    }
+    .tracker-item input {
+      appearance: none;
+      width: 1.125rem;
+      height: 1.125rem;
+      margin-top: 0.125rem;
+      border: 1.5px solid var(--rule-strong);
+      border-radius: 4px;
+      background: var(--surface-tint);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .tracker-item input:checked {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+    .tracker-item input:checked::before {
+      content: '';
+      width: 0.5rem;
+      height: 0.3rem;
+      border-left: 2px solid var(--surface);
+      border-bottom: 2px solid var(--surface);
+      transform: rotate(-45deg) translateY(-1px);
+    }
+    .tracker-item input:disabled { opacity: 1; }
+    .tracker-item span {
+      min-width: 0;
+      overflow-wrap: break-word;
+    }
+    .tracker-item--done span {
+      color: var(--ink-faint);
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
+      text-decoration-color: var(--rule-strong);
+    }
+    .tracker-list--focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft), var(--shadow-soft);
+    }
+    .tracker-list--focus h3 { color: var(--accent); }
+
+    /* ============================================================
+       INFOGRAPHIC RESOURCES
+       ============================================================ */
+    .resources {
+      max-width: var(--container-banner);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      min-width: 0;
+    }
+    .resource-card {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 1.25rem;
+      min-width: 0;
+      box-shadow: var(--shadow-soft);
+    }
+    .resource-card--wide {
+      grid-column: 1 / -1;
+    }
+    .resource-card h3 {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-style: italic;
+      font-size: 1.5rem;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .resource-card p {
+      color: var(--ink-soft);
+      font-size: 0.9375rem;
+      line-height: 1.55;
+    }
+    .canvas-preview {
+      display: block;
+      margin-top: 1rem;
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg);
+      box-shadow: var(--shadow-soft);
+    }
+    .canvas-preview img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+    .canvas-preview:hover img {
+      transform: scale(1.01);
+    }
+    .resource-meta {
+      display: inline-flex;
+      margin-bottom: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .resource-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    .resource-link {
+      min-height: 7rem;
+      border: 1px solid var(--rule);
+      border-radius: 6px;
+      padding: 0.875rem;
+      background: var(--surface-tint);
+    }
+    .resource-link a {
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .resource-link a:hover {
+      color: var(--accent);
+    }
+    .resource-link strong {
+      display: block;
+      font-size: 0.875rem;
+      line-height: 1.3;
+      margin-bottom: 0.375rem;
+    }
+    .resource-link span {
+      display: block;
+      color: var(--ink-soft);
+      font-size: 0.75rem;
+      line-height: 1.4;
+    }
+    .resource-link--planned {
+      border-style: dashed;
+      background: transparent;
+    }
+
+    /* ============================================================
        SECTION HEAD
        ============================================================ */
     .section-head {
@@ -569,7 +806,7 @@
       from { opacity: 0; transform: translateY(16px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .topnav, .banner, .masthead, .intro, .section-head, .sessions, .more, .valediction, footer {
+    .topnav, .banner, .masthead, .intro, .tracker, .section-head, .resources, .sessions, .more, .valediction, footer {
       opacity: 0;
       animation: rise 0.7s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
     }
@@ -577,11 +814,13 @@
     .banner       { animation-delay: 0.05s; }
     .masthead     { animation-delay: 0.18s; }
     .intro        { animation-delay: 0.30s; }
-    .section-head { animation-delay: 0.42s; }
-    .sessions     { animation-delay: 0.52s; }
-    .more         { animation-delay: 0.70s; }
-    .valediction  { animation-delay: 0.85s; }
-    footer        { animation-delay: 0.95s; }
+    .tracker      { animation-delay: 0.38s; }
+    .section-head { animation-delay: 0.48s; }
+    .resources    { animation-delay: 0.54s; }
+    .sessions     { animation-delay: 0.64s; }
+    .more         { animation-delay: 0.76s; }
+    .valediction  { animation-delay: 0.91s; }
+    footer        { animation-delay: 1.01s; }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
@@ -595,6 +834,14 @@
        MOBILE
        ============================================================ */
     @media (max-width: 640px) {
+      .tracker { margin-top: 3rem; }
+      .tracker-top { display: block; }
+      .tracker-note { text-align: left; margin-top: 0.75rem; }
+      .tracker-grid { grid-template-columns: 1fr; }
+      .tracker-list { padding: 1.125rem; }
+      .resource-grid { grid-template-columns: 1fr; }
+      .resource-list { grid-template-columns: 1fr; }
+      .resource-link { min-height: auto; }
       .session-card { padding: 1.5rem 1.5rem 1.25rem; }
       .session-grid { gap: 0.5rem 1.25rem; }
       .session-num { font-size: 4rem; }
@@ -634,6 +881,169 @@
     <p>
       Newest at the top. Click into any session to listen to what came out of it, read the build notes, or scroll through the side-by-side feedback.
     </p>
+  </section>
+
+  <!-- Learning tracker -->
+  <section class="tracker" aria-labelledby="tracker-title">
+    <div class="tracker-top">
+      <div>
+        <p class="tracker-kicker">Upcoming · resources · coverage</p>
+        <h2 class="tracker-title" id="tracker-title">Learning tracker</h2>
+        <p class="tracker-context">Everything here gets taught through AI coding agents in Claude Code or Cursor: Tanner should know the workflow, the mental model, and what to ask the agent to do.</p>
+      </div>
+      <p class="tracker-note">updated · may 24 · 2026</p>
+    </div>
+
+    <div class="tracker-grid">
+      <article class="tracker-list">
+        <h3>Started / covered</h3>
+        <ul>
+          <li class="tracker-item tracker-item--done">
+            <input type="checkbox" checked disabled aria-label="Covered: picked the referral agent idea">
+            <span>Picked the referral agent as the next real project.</span>
+          </li>
+          <li class="tracker-item tracker-item--done">
+            <input type="checkbox" checked disabled aria-label="Covered: started with user experience before architecture">
+            <span>Started with the UX slice before going deep on architecture.</span>
+          </li>
+          <li class="tracker-item tracker-item--done">
+            <input type="checkbox" checked disabled aria-label="Covered: started the UI hosting and data storage stack">
+            <span>Started the UI, hosting, and data-storage stack: Next.js, Vercel, Supabase, TypeScript, React, Tailwind, and shadcn/ui.</span>
+          </li>
+          <li class="tracker-item tracker-item--done">
+            <input type="checkbox" checked disabled aria-label="Covered: used Claude Code plan mode">
+            <span>Used Claude Code plan mode and loaded the Vercel, frontend, and agents skills.</span>
+          </li>
+          <li class="tracker-item tracker-item--done">
+            <input type="checkbox" checked disabled aria-label="Covered: touched secure storage boundaries">
+            <span>Touched the security question at a high level: what can be stored, who can access it, and what should stay out.</span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="tracker-list tracker-list--focus">
+        <h3>Next session focus</h3>
+        <ul>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Open item: consolidate machine structure">
+            <span>Consolidate what's on Tanner's machine into a sane project structure.</span>
+          </li>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Open item: set project startup habits">
+            <span>Set habits for spinning up new projects so the workspace does not sprawl again.</span>
+          </li>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Open item: GitHub basics">
+            <span>Get deeper into GitHub: repos, project setup, pushes, and how it connects to the work on her machine.</span>
+          </li>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Open item: build git deployment mental model">
+            <span>Build the mental model: local files vs. GitHub vs. hosting, what is in git, and what actually gets deployed.</span>
+          </li>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Open item: terminal workflow">
+            <span>Use the cleanup as the terminal-workflow lesson: let the agent drive, but narrate the messy parts.</span>
+          </li>
+        </ul>
+      </article>
+
+      <article class="tracker-list">
+        <h3>Jake should cover</h3>
+        <ul>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Open item: Vercel account">
+            <span>Set up a Vercel account and explain why Vercel sits after GitHub in the workflow.</span>
+          </li>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Open item: Vercel CLI project">
+            <span>Set up the Vercel CLI, link a project, and show what the CLI is doing behind the scenes.</span>
+          </li>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Open item: environment variables">
+            <span>Talk through environment variables: local secrets, Vercel secrets, what goes in git, and what never should.</span>
+          </li>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Open item: connect GitHub and Vercel">
+            <span>Connect GitHub, Vercel, and the local project, then deploy once and debug the rough edges.</span>
+          </li>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Open item: API agent if time">
+            <span>If time permits, build an ElevenAgent via API with a live context dataset.</span>
+          </li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- Infographic resources -->
+  <div class="section-head" id="infographics">
+    <h2>Infographics</h2>
+    <span class="meta">simple · mental · models</span>
+  </div>
+
+  <section class="resources" aria-label="Infographic resources">
+    <div class="resource-grid">
+      <article class="resource-card resource-card--wide">
+        <span class="resource-meta">team workflow</span>
+        <h3>Vercel deployment path</h3>
+        <p>
+          The slower team path is worth learning first because it shows all the pieces: local work, branch, pull request, merge to main, then Vercel auto-deploys the merged code. Click for the full-size canvas.
+        </p>
+        <a class="canvas-preview" href="assets/infographics/vercel-deployment-path.png">
+          <img src="assets/infographics/vercel-deployment-path.png" alt="Infographic showing the Vercel deployment path from local project to new branch, GitHub pull request, main merge, Vercel build, and live site." width="1800" height="1120">
+        </a>
+      </article>
+
+      <article class="resource-card">
+        <span class="resource-meta">solo workflow</span>
+        <h3>The shortcut path</h3>
+        <p>
+          If you are working alone, the pull-request ceremony can be lighter. You can merge your own branch or push directly when the risk is low.
+        </p>
+        <a class="canvas-preview" href="assets/infographics/solo-deployment-shortcut.png">
+          <img src="assets/infographics/solo-deployment-shortcut.png" alt="Infographic showing the solo shortcut path: edit locally, commit, push or merge, deploy." width="1500" height="980">
+        </a>
+      </article>
+
+      <article class="resource-card">
+        <span class="resource-meta">what lives where</span>
+        <h3>Local, GitHub, Vercel</h3>
+        <p>
+          This is the mental model to keep repeating: your computer is where work happens, GitHub is the shared source of truth, and Vercel is where the app runs.
+        </p>
+        <a class="canvas-preview" href="assets/infographics/local-github-vercel-model.png">
+          <img src="assets/infographics/local-github-vercel-model.png" alt="Infographic explaining where work lives across local files, GitHub, and Vercel." width="1500" height="980">
+        </a>
+      </article>
+
+      <article class="resource-card resource-card--wide">
+        <span class="resource-meta">resource index</span>
+        <h3>Diagrams to use as we go</h3>
+        <p>
+          Keep the page as a small library of explainers: some already exist, some should be made when the topic comes up in session.
+        </p>
+        <ul class="resource-list">
+          <li class="resource-link">
+            <a href="sessions/2026-05-20.html">
+              <strong>Stack walkthrough</strong>
+              <span>Already made: how Next.js, Vercel, Supabase, and ElevenLabs fit together.</span>
+            </a>
+          </li>
+          <li class="resource-link">
+            <a href="assets/the-stack-quick-reference.pdf">
+              <strong>Stack quick reference</strong>
+              <span>Already made: one-page PDF for the current stack.</span>
+            </a>
+          </li>
+          <li class="resource-link">
+            <a href="assets/infographics/lattice-cartography.md">
+              <strong>Canvas philosophy</strong>
+              <span>Design note for the generated infographic style.</span>
+            </a>
+          </li>
+        </ul>
+      </article>
+    </div>
   </section>
 
   <!-- Sessions directory -->
