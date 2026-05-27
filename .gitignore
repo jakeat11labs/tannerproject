@@ -14,3 +14,11 @@ out/
 .claude/*
 !.claude/skills/
 !.claude/skills/**
+
+# Raw session source material is private by default.
+# Force-add only after the user confirms the contents are safe to publish.
+sessions/*/raw-transcript/
+sessions/*/claude-code-transcript/
+sessions/*/source/
+sessions/*/_source/
+sessions/*/private/

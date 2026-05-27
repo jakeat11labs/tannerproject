@@ -42,8 +42,11 @@ tannerproject/
 │   ├── 2026-05-20.html     ← session 03 · referral agent (paused at plan-mode)
 │   └── 2026-05-20/         ← session 03 source materials (transcripts, visuals)
 ├── README.md               ← this file
+├── AGENTS.md               ← Codex/agent guidance
 ├── CLAUDE.md               ← umbrella guidance for Claude Code
 ├── assets/                 ← shared brand stuff (banner, future logos)
+├── .agents/skills/         ← project-local agent skills
+│   └── tanner-session-processor/
 ├── .claude/skills/         ← Claude Code skills (work from anywhere in the repo)
 │   ├── interview-audio/    ← operational walkthrough for the audio project
 │   └── tutor-mode/         ← teach-me-Claude-Code mode + the case study of how this was built
@@ -59,6 +62,8 @@ The two skills at `.claude/skills/` are loaded by Claude Code based on what you 
 - **`tutor-mode`** — anything about how to use Claude Code, dev patterns, why Jake did X this way, the case study of how this whole thing was built. Triggered by "how does X work?", "explain Y," "teach me Z."
 
 Both skills auto-load on relevant questions or you can invoke them manually with `/interview-audio` or `/tutor-mode`.
+
+The project-local skill at `.agents/skills/tanner-session-processor/` handles the recurring session-ingestion workflow: point it at raw human transcripts, Claude Code/Cursor logs, screenshots, or a docs folder, and it turns the source material into a public session page, project-page update, tracker/resource updates, and optional infographic recommendations.
 
 ---
 

@@ -1,0 +1,26 @@
+{
+  "skill_name": "tanner-session-processor",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Process the last Tanner session using /Users/jakerains/Projects/referral-agent/docs/05-26 Building and Deploying a Web Application with Modern AI Tooling-transcript.txt and /Users/jakerains/Projects/referral-agent/docs/session-2026-05-26.md. Add the session to the Tannerproject page, summarize what was taught, update next-session items, and identify any infographics that should be made.",
+      "expected_output": "Creates or proposes a dated session page, updates index.html newest-first, avoids copying raw transcript/log content, and recommends or creates relevant infographics.",
+      "files": [
+        "/Users/jakerains/Projects/referral-agent/docs/05-26 Building and Deploying a Web Application with Modern AI Tooling-transcript.txt",
+        "/Users/jakerains/Projects/referral-agent/docs/session-2026-05-26.md"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I dropped a raw transcript and a Claude Code export into sessions/2026-06-02/. Turn them into a public session record and update the project page. Keep anything private out of the public HTML.",
+      "expected_output": "Inventories the source folder, synthesizes a public session page, keeps raw folders untracked unless approved, updates index.html and tracker/resources, and verifies HTML/link paths.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Look at this new session where we explained Git branches, Vercel env vars, and deployment previews. Should any new diagrams be added to Tannerproject?",
+      "expected_output": "Uses the infographic decision guide, proposes concrete visual resources, and invokes or points to canvas-design for concepts worth turning into PNG/PDF resources.",
+      "files": []
+    }
+  ]
+}

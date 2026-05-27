@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session 04 - Referral agent build and deployment · Tanner's Project</title>
+  <meta name="description" content="Session 04 (5/26): Jake and Tanner continued the referral agent build, wiring Next.js, Vercel, Supabase, GitHub, environment variables, and ElevenLabs agent pieces into a deployable app.">
+  <meta name="theme-color" content="#FAF7F2">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FAF7F2;
+      --surface: #FFFFFF;
+      --surface-tint: #F8F3EA;
+      --ink: #1B1812;
+      --ink-soft: #4A463F;
+      --ink-faint: #8B867D;
+      --rule: #E8E2D6;
+      --rule-strong: #D6CFC1;
+      --accent: #C8541E;
+      --accent-soft: rgba(200, 84, 30, 0.10);
+      --sage: #5C7A4A;
+      --blue: #3F739A;
+      --font-display: 'Instrument Serif', Georgia, serif;
+      --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+      --container: 1080px;
+      --narrow: 740px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161310;
+        --surface: #211D18;
+        --surface-tint: #2A251F;
+        --ink: #F4EFE6;
+        --ink-soft: #C7BFB2;
+        --ink-faint: #877F73;
+        --rule: #3A352D;
+        --rule-strong: #4D463C;
+        --accent: #E89260;
+        --accent-soft: rgba(232, 146, 96, 0.12);
+        --sage: #95B47C;
+        --blue: #75A9D0;
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.65;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+    @media (prefers-color-scheme: dark) {
+      body::before { mix-blend-mode: screen; opacity: 0.04; }
+    }
+    img { max-width: 100%; display: block; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .topnav {
+      width: min(var(--container), calc(100vw - 3rem));
+      max-width: var(--container);
+      margin: 1.5rem auto 0;
+      padding: 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .topnav a { color: var(--ink-faint); }
+
+    .masthead {
+      width: min(var(--narrow), calc(100vw - 3rem));
+      max-width: var(--narrow);
+      margin: 4.5rem auto 0;
+      padding: 0;
+    }
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+    .title {
+      font-family: var(--font-display);
+      font-weight: 400;
+      font-size: clamp(3rem, 8vw, 5rem);
+      line-height: 0.96;
+      letter-spacing: -0.025em;
+      margin-bottom: 1.5rem;
+    }
+    .title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .subtitle {
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    .intro,
+    .section,
+    .note {
+      width: min(var(--narrow), calc(100vw - 3rem));
+      max-width: var(--narrow);
+      margin: 3rem auto 0;
+      padding: 0;
+    }
+    .lead {
+      font-family: var(--font-display);
+      font-size: clamp(1.25rem, 2.4vw, 1.6rem);
+      line-height: 1.42;
+      color: var(--ink);
+      margin-bottom: 1rem;
+    }
+    p { color: var(--ink-soft); }
+    .title,
+    .lead,
+    p,
+    li,
+    h3 {
+      overflow-wrap: anywhere;
+    }
+    p + p { margin-top: 1rem; }
+
+    .note {
+      padding: 1.5rem 1.75rem;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+    }
+    .note strong { color: var(--ink); }
+
+    .section-head {
+      width: min(var(--container), calc(100vw - 3rem));
+      max-width: var(--container);
+      margin: 5rem auto 1.5rem;
+      padding: 0;
+      display: flex;
+      gap: 1.25rem;
+      align-items: baseline;
+    }
+    .section-head h2 {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(2rem, 4vw, 2.6rem);
+      color: var(--ink);
+    }
+    .section-head .meta {
+      flex: 1;
+      border-bottom: 1px dashed var(--rule-strong);
+      padding-bottom: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+
+    .cards {
+      width: min(var(--container), calc(100vw - 3rem));
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .card h3 {
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+      color: var(--ink);
+    }
+    .card p,
+    .card li {
+      font-size: 0.9375rem;
+      color: var(--ink-soft);
+    }
+    .card ul {
+      padding-left: 1.1rem;
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .wide {
+      width: min(var(--container), calc(100vw - 3rem));
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0;
+    }
+    .artifact {
+      display: block;
+      background: #1B1812;
+      border: 1px solid var(--rule-strong);
+      border-radius: 10px;
+      padding: 1rem;
+      overflow: hidden;
+    }
+    .artifact img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+    }
+    .artifact-caption {
+      margin-top: 0.85rem;
+      color: var(--ink-faint);
+      font-size: 0.875rem;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 0.85rem;
+      list-style: none;
+    }
+    .checklist li {
+      padding-left: 1.5rem;
+      position: relative;
+      color: var(--ink-soft);
+    }
+    .checklist li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0.67rem;
+      width: 0.55rem;
+      height: 0.55rem;
+      border: 1.5px solid var(--accent);
+      border-radius: 999px;
+    }
+
+    .timeline-wrap {
+      width: min(var(--container), calc(100vw - 3rem));
+      max-width: var(--container);
+      margin: 0 auto;
+    }
+    .timeline {
+      position: relative;
+      padding: 1rem 0 2rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 20px;
+      width: 2px;
+      background: linear-gradient(to bottom, transparent 0%, var(--rule-strong) 40px, var(--rule-strong) calc(100% - 40px), transparent 100%);
+      z-index: 0;
+    }
+    .milestone {
+      position: relative;
+      padding: 0 0 2rem 3rem;
+    }
+    .milestone::before {
+      content: '';
+      position: absolute;
+      left: 13px;
+      top: 0.5rem;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--accent);
+      z-index: 1;
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+    .ms-card {
+      position: relative;
+      z-index: 1;
+      background: var(--surface);
+      border: 1px solid var(--rule);
+      border-radius: 8px;
+      padding: 1.25rem 1.35rem;
+    }
+    .ms-time {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    .ms-title {
+      font-size: 1rem;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .ms-beat {
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+    }
+
+    @media (min-width: 720px) {
+      .timeline::before {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      .milestone {
+        padding: 0 0 2.5rem 0;
+        width: calc(50% - 2rem);
+      }
+      .milestone:nth-child(odd) {
+        margin-left: 0;
+        text-align: right;
+        padding-right: 2.5rem;
+      }
+      .milestone:nth-child(odd)::before {
+        left: auto;
+        right: -2.45rem;
+      }
+      .milestone:nth-child(even) {
+        margin-left: calc(50% + 2rem);
+        padding-left: 2.5rem;
+      }
+      .milestone:nth-child(even)::before {
+        left: -2.45rem;
+      }
+    }
+
+    .sources {
+      width: min(var(--container), calc(100vw - 3rem));
+      max-width: var(--container);
+      margin: 0 auto;
+    }
+    .source-list {
+      list-style: none;
+      border-top: 1px solid var(--rule);
+    }
+    .source-list li { border-bottom: 1px solid var(--rule); }
+    .source-list a {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 1.5rem;
+      align-items: baseline;
+      padding: 1.25rem 0.5rem;
+      color: var(--ink);
+      transition: color 0.2s ease, padding 0.3s ease, background 0.3s ease;
+    }
+    .source-list a:hover {
+      color: var(--accent);
+      padding-left: 1.25rem;
+      background: linear-gradient(90deg, var(--accent-soft) 0%, transparent 100%);
+      text-decoration: none;
+    }
+    .source-list .num {
+      min-width: 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.12em;
+      color: var(--ink-faint);
+    }
+    .source-list .title-link {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.45rem;
+    }
+    .source-list .desc {
+      max-width: 18rem;
+      text-align: right;
+      font-size: 0.875rem;
+      color: var(--ink-soft);
+    }
+
+    footer {
+      width: min(var(--container), calc(100vw - 3rem));
+      max-width: var(--container);
+      margin: 6rem auto 2rem;
+      padding: 1.5rem;
+      border-top: 1px solid var(--rule);
+      color: var(--ink-faint);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 760px) {
+      .topnav { flex-wrap: wrap; }
+      .masthead,
+      .intro,
+      .section,
+      .note,
+      .wide {
+        max-width: none;
+        width: 100%;
+      }
+      .title {
+        font-size: clamp(2.6rem, 14vw, 3.25rem);
+        overflow-wrap: anywhere;
+      }
+      .lead,
+      p,
+      li,
+      h3 {
+        overflow-wrap: anywhere;
+      }
+      .cards { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .section-head .meta { display: block; margin-top: 0.5rem; }
+      .source-list a { grid-template-columns: auto 1fr; gap: 1rem; }
+      .source-list .desc { display: none; }
+      .source-list .title-link { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <a href="../index.html">Back to sessions</a>
+    <a href="https://github.com/jakeat11labs/referral-agent">Referral agent repo</a>
+  </nav>
+
+  <header class="masthead">
+    <p class="eyebrow">Session 04 · May 26, 2026</p>
+    <h1 class="title">Referral agent <em>build + deploy</em></h1>
+    <p class="subtitle">Next.js · Vercel · Supabase · ElevenLabs · GitHub</p>
+  </header>
+
+  <section class="intro">
+    <p class="lead">
+      This was the continuation session where the referral-agent idea became a real app shape: a public interview flow, an admin dashboard, Supabase-backed data, ElevenLabs agent configuration, Vercel project wiring, and a much sharper model of what lives locally, in GitHub, in hosting, and in runtime environments.
+    </p>
+    <p>
+      The raw human transcript and Claude Code session export were used as source material for this summary. They are not reproduced here; this page is the public learning record.
+    </p>
+  </section>
+
+  <section class="note">
+    <p><strong>The main lesson:</strong> AI coding agents can build a lot of product surface quickly, but the important teaching work is understanding the handoff points: local files, commits, Vercel builds, environment variables, hosted services, webhooks, and browser-visible output.</p>
+  </section>
+
+  <div class="section-head">
+    <h2>What We Made</h2>
+    <span class="meta">product · stack · wiring</span>
+  </div>
+
+  <section class="cards">
+    <article class="card">
+      <h3>Referral agent app</h3>
+      <p>A Next.js app with a public voice-first interview surface and an admin side for openings, interviews, candidates, trends, and skills.</p>
+    </article>
+    <article class="card">
+      <h3>Data + agent backbone</h3>
+      <p>Supabase schema and seed data, ElevenLabs agent/tool config, signed URL flow, webhook handling, and post-call structured extraction.</p>
+    </article>
+    <article class="card">
+      <h3>Deployment path</h3>
+      <p>GitHub became the source record, Vercel became the hosted runtime, and environment variables became the boundary between code and secrets.</p>
+    </article>
+  </section>
+
+  <div class="section-head">
+    <h2>What We Practiced</h2>
+    <span class="meta">agent workflow · infrastructure</span>
+  </div>
+
+  <section class="cards">
+    <article class="card">
+      <h3>AI coding agents</h3>
+      <ul>
+        <li>Let Claude Code drive implementation while Jake narrated what mattered.</li>
+        <li>Used planning, commits, verification, and refactors as part of the lesson.</li>
+        <li>Kept the focus on asking the agent for outcomes, not hand-editing every file.</li>
+      </ul>
+    </article>
+    <article class="card">
+      <h3>Runtime boundaries</h3>
+      <ul>
+        <li>Local `.env.local` is for local development.</li>
+        <li>Vercel env vars are for hosted runtime secrets.</li>
+        <li>GitHub should hold code and history, not private credentials.</li>
+      </ul>
+    </article>
+    <article class="card">
+      <h3>Production rough edges</h3>
+      <ul>
+        <li>Adjusted around Vercel Hobby-plan cron limits.</li>
+        <li>Handled BotID placement and protected signed-URL requests.</li>
+        <li>Started the last-mile checklist for webhook and deploy verification.</li>
+      </ul>
+    </article>
+  </section>
+
+  <div class="section-head">
+    <h2>The Session</h2>
+    <span class="meta">in · order · build → deploy</span>
+  </div>
+
+  <section class="timeline-wrap">
+    <div class="timeline">
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">01</span>
+          <h3 class="ms-title">Reopened the referral-agent plan</h3>
+          <p class="ms-beat">The session picked up from the prior plan-mode stop: build the referral agent as a real app, not just an architecture sketch.</p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">02</span>
+          <h3 class="ms-title">Built the app surface</h3>
+          <p class="ms-beat">Claude Code filled in the public interview flow and admin dashboard while Jake narrated the product shape and where each piece fits.</p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">03</span>
+          <h3 class="ms-title">Wired data and agent pieces</h3>
+          <p class="ms-beat">Supabase became the data layer, ElevenLabs became the agent layer, and the app gained signed URLs, webhook handling, post-call extraction, and admin review flows.</p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">04</span>
+          <h3 class="ms-title">Connected hosting and secrets</h3>
+          <p class="ms-beat">Vercel project setup, environment variables, GitHub commits, Supabase integration, and deployment settings became the main infrastructure lesson.</p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">05</span>
+          <h3 class="ms-title">Hit production rough edges</h3>
+          <p class="ms-beat">The work exposed the useful messy parts: Hobby-plan cron limits, BotID placement, signed-URL protection, placeholder webhook secrets, and what still needs live verification.</p>
+        </div>
+      </article>
+
+      <article class="milestone">
+        <div class="ms-card">
+          <span class="ms-time">06</span>
+          <h3 class="ms-title">Left a clean next-session checklist</h3>
+          <p class="ms-beat">The app was substantially built, but the next teaching moment is the live deploy check: production branch, deployed URL, real webhook secret, and one full interview path.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <h2>New Resource</h2>
+    <span class="meta">mental model · visual</span>
+  </div>
+
+  <section class="wide">
+    <a class="artifact" href="../assets/infographics/runtime-boundaries.png">
+      <img src="../assets/infographics/runtime-boundaries.png" alt="Infographic mapping local files, GitHub, Vercel, Supabase, ElevenLabs, and the browser as runtime boundaries for code and secrets." width="1800" height="1120">
+    </a>
+    <p class="artifact-caption">
+      Use this when explaining why code goes to GitHub, secrets go to environments, Vercel hosts the app, Supabase stores data, ElevenLabs runs the agent layer, and the browser only sees the deployed public surface.
+    </p>
+  </section>
+
+  <div class="section-head">
+    <h2>Open Loops</h2>
+    <span class="meta">next · session</span>
+  </div>
+
+  <section class="section">
+    <ul class="checklist">
+      <li>Finish the live deployment check: production branch, production URL, final Vercel deployment, and browser verification.</li>
+      <li>Configure the ElevenLabs post-call webhook against the deployed URL and replace any placeholder secret with the real value.</li>
+      <li>Run a full end-to-end interview: signed URL, agent conversation, post-call extraction, Supabase write, and admin review.</li>
+      <li>Use the referral-agent repo to teach GitHub more slowly: dirty worktree, commits, branch choices, remote origin, and what Vercel watches.</li>
+      <li>After the app is stable, return to machine cleanup and project-start habits so new projects do not sprawl.</li>
+    </ul>
+  </section>
+
+  <div class="section-head">
+    <h2>Source Materials</h2>
+    <span class="meta">raw · local · linked</span>
+  </div>
+
+  <section class="sources">
+    <ul class="source-list">
+      <li>
+        <a href="2026-05-26/raw-transcript/05-26-building-and-deploying-a-web-application-with-modern-ai-tooling-transcript.txt">
+          <span class="num">01</span>
+          <span class="title-link">Raw conversation transcript</span>
+          <span class="desc">Live-session transcript used as source material.</span>
+        </a>
+      </li>
+      <li>
+        <a href="2026-05-26/claude-code-transcript/session-2026-05-26.md">
+          <span class="num">02</span>
+          <span class="title-link">Claude Code session log</span>
+          <span class="desc">Agent session export from the referral-agent build.</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://github.com/jakeat11labs/referral-agent">
+          <span class="num">03</span>
+          <span class="title-link">Referral-agent source repo</span>
+          <span class="desc">The app built during this session.</span>
+        </a>
+      </li>
+      <li>
+        <a href="../assets/infographics/runtime-boundaries.png">
+          <span class="num">04</span>
+          <span class="title-link">Runtime boundaries visual</span>
+          <span class="desc">The new infographic made from this session.</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <footer>
+    <span>Session 04 · synthesized from source material, not a raw transcript</span>
+    <a href="../index.html">Back to Tanner's Project</a>
+  </footer>
+</body>
+</html>

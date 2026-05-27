@@ -891,7 +891,7 @@
         <h2 class="tracker-title" id="tracker-title">Learning tracker</h2>
         <p class="tracker-context">Everything here gets taught through AI coding agents in Claude Code or Cursor: Tanner should know the workflow, the mental model, and what to ask the agent to do.</p>
       </div>
-      <p class="tracker-note">updated · may 24 · 2026</p>
+      <p class="tracker-note">updated · may 27 · 2026</p>
     </div>
 
     <div class="tracker-grid">
@@ -911,6 +911,14 @@
             <span>Started the UI, hosting, and data-storage stack: Next.js, Vercel, Supabase, TypeScript, React, Tailwind, and shadcn/ui.</span>
           </li>
           <li class="tracker-item tracker-item--done">
+            <input type="checkbox" checked disabled aria-label="Covered: built referral agent app shape">
+            <span>Built the referral-agent app shape: public interview flow, admin dashboard, Supabase schema, and ElevenLabs agent/tool configs.</span>
+          </li>
+          <li class="tracker-item tracker-item--done">
+            <input type="checkbox" checked disabled aria-label="Covered: Vercel project and environment setup">
+            <span>Set up the real deployment path: GitHub repo, Vercel project, Supabase integration, and environment variable sync.</span>
+          </li>
+          <li class="tracker-item tracker-item--done">
             <input type="checkbox" checked disabled aria-label="Covered: used Claude Code plan mode">
             <span>Used Claude Code plan mode and loaded the Vercel, frontend, and agents skills.</span>
           </li>
@@ -925,16 +933,16 @@
         <h3>Next session focus</h3>
         <ul>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: consolidate machine structure">
-            <span>Consolidate what's on Tanner's machine into a sane project structure.</span>
+            <input type="checkbox" disabled aria-label="Open item: finish live deployment verification">
+            <span>Finish the live deployment check: production branch, production URL, webhook URL, real webhook secret, and end-to-end interview.</span>
           </li>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: set project startup habits">
-            <span>Set habits for spinning up new projects so the workspace does not sprawl again.</span>
+            <input type="checkbox" disabled aria-label="Open item: consolidate machine structure">
+            <span>Consolidate what's on Tanner's machine into a sane project structure, using referral-agent as the example.</span>
           </li>
           <li class="tracker-item">
             <input type="checkbox" disabled aria-label="Open item: GitHub basics">
-            <span>Get deeper into GitHub: repos, project setup, pushes, and how it connects to the work on her machine.</span>
+            <span>Go deeper into GitHub: dirty worktrees, commits, branches, remotes, project setup, pushes, and what Vercel watches.</span>
           </li>
           <li class="tracker-item">
             <input type="checkbox" disabled aria-label="Open item: build git deployment mental model">
@@ -951,12 +959,12 @@
         <h3>Jake should cover</h3>
         <ul>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: Vercel account">
-            <span>Set up a Vercel account and explain why Vercel sits after GitHub in the workflow.</span>
+            <input type="checkbox" disabled aria-label="Open item: replay Vercel setup">
+            <span>Replay the Vercel CLI/project/env setup slowly so Tanner can narrate the model back.</span>
           </li>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: Vercel CLI project">
-            <span>Set up the Vercel CLI, link a project, and show what the CLI is doing behind the scenes.</span>
+            <input type="checkbox" disabled aria-label="Open item: runtime boundaries">
+            <span>Use the runtime-boundaries map to explain local secrets, Vercel env vars, Supabase service keys, ElevenLabs webhooks, and browser-visible public config.</span>
           </li>
           <li class="tracker-item">
             <input type="checkbox" disabled aria-label="Open item: environment variables">
@@ -964,7 +972,7 @@
           </li>
           <li class="tracker-item">
             <input type="checkbox" disabled aria-label="Open item: connect GitHub and Vercel">
-            <span>Connect GitHub, Vercel, and the local project, then deploy once and debug the rough edges.</span>
+            <span>Connect GitHub, Vercel, and the local project to the final deploy check, then debug the rough edges in front of Tanner.</span>
           </li>
           <li class="tracker-item">
             <input type="checkbox" disabled aria-label="Open item: API agent if time">
@@ -1028,6 +1036,17 @@
       </article>
 
       <article class="resource-card resource-card--wide">
+        <span class="resource-meta">runtime boundaries</span>
+        <h3>Code, secrets, and the browser</h3>
+        <p>
+          The Session 04 visual: code lives in GitHub, secrets live in environments, Vercel runs the app, Supabase stores data, ElevenLabs runs the agent layer, and users only see what deploys.
+        </p>
+        <a class="canvas-preview" href="assets/infographics/runtime-boundaries.png">
+          <img src="assets/infographics/runtime-boundaries.png" alt="Infographic mapping local files, GitHub, Vercel, Supabase, ElevenLabs, and the browser as runtime boundaries for code and secrets." width="1800" height="1120">
+        </a>
+      </article>
+
+      <article class="resource-card resource-card--wide">
         <span class="resource-meta">resource index</span>
         <h3>Diagrams to use as we go</h3>
         <p>
@@ -1058,6 +1077,12 @@
               <span>Design note for the GitHub process map.</span>
             </a>
           </li>
+          <li class="resource-link">
+            <a href="assets/infographics/runtime-boundaries.md">
+              <strong>Runtime boundaries</strong>
+              <span>Design note for the Session 04 code, secrets, and browser map.</span>
+            </a>
+          </li>
         </ul>
       </article>
     </div>
@@ -1071,8 +1096,28 @@
 
   <section class="sessions">
 
+    <!-- Session 04 — Referral agent build + deploy continuation -->
+    <article class="session-card session-card--latest" data-num="04">
+      <div class="session-grid">
+        <div class="session-num">04</div>
+        <div>
+          <p class="session-meta">5/26 build · deployment handoff</p>
+          <h3 class="session-title"><a href="sessions/2026-05-26.html">Referral agent <em>— build + deploy</em></a></h3>
+        </div>
+        <p class="session-desc" style="grid-column: 2;">
+          Took the referral-agent plan into a real Next.js app: public interview flow, admin dashboard, Supabase schema, ElevenLabs agent/tool configs, Vercel env wiring, GitHub commits, BotID, and the last-mile deployment checklist.
+        </p>
+        <div class="session-inside">
+          <a href="sessions/2026-05-26.html" class="tag">session notes →</a>
+          <a href="assets/infographics/runtime-boundaries.png" class="tag">runtime boundaries →</a>
+          <span class="tag">vercel + supabase + elevenlabs</span>
+        </div>
+        <p class="session-cta"><a href="sessions/2026-05-26.html" style="color: var(--accent); text-decoration: none;">read the session →</a></p>
+      </div>
+    </article>
+
     <!-- Session 03 — Referral agent (live 1:1, plan-mode kickoff) -->
-    <article class="session-card session-card--latest" data-num="03">
+    <article class="session-card" data-num="03">
       <div class="session-grid">
         <div class="session-num">03</div>
         <div>
