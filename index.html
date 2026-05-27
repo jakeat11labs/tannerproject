@@ -889,7 +889,7 @@
       <div>
         <p class="tracker-kicker">Upcoming · resources · coverage</p>
         <h2 class="tracker-title" id="tracker-title">Learning tracker</h2>
-        <p class="tracker-context">Everything here gets taught through AI coding agents in Claude Code or Cursor: Tanner should know the workflow, the mental model, and what to ask the agent to do.</p>
+        <p class="tracker-context">Next session starts by reviewing the agent Jake finished, then flips the driver seat so Tanner runs her setup and deploy while Jake coaches.</p>
       </div>
       <p class="tracker-note">updated · may 27 · 2026</p>
     </div>
@@ -933,49 +933,61 @@
         <h3>Next session focus</h3>
         <ul>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: finish live deployment verification">
-            <span>Finish the live deployment check: production branch, production URL, webhook URL, real webhook secret, and end-to-end interview.</span>
+            <input type="checkbox" disabled aria-label="Open item: review Jake's finished agent">
+            <span>Review the finished agent from Jake first: what works, what changed, and what Tanner wants to carry into her own project.</span>
+          </li>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Open item: Tanner drives the project setup">
+            <span>Tanner drives: open her project, state what she is trying to ship, and decide the first setup step.</span>
           </li>
           <li class="tracker-item">
             <input type="checkbox" disabled aria-label="Open item: consolidate machine structure">
-            <span>Consolidate what's on Tanner's machine into a sane project structure, using referral-agent as the example.</span>
+            <span>Get her machine organized into a sane project structure so files, repos, docs, and env files have obvious homes.</span>
           </li>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: GitHub basics">
-            <span>Go deeper into GitHub: dirty worktrees, commits, branches, remotes, project setup, pushes, and what Vercel watches.</span>
+            <input type="checkbox" disabled aria-label="Open item: connect local project to GitHub">
+            <span>Connect the local project to GitHub: repo, branch, commit, push, and confirm what changed.</span>
           </li>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: build git deployment mental model">
-            <span>Build the mental model: local files vs. GitHub vs. hosting, what is in git, and what actually gets deployed.</span>
+            <input type="checkbox" disabled aria-label="Open item: connect project to Vercel">
+            <span>Connect the project to Vercel, add the needed environment variables, and deploy from the real repo.</span>
           </li>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: terminal workflow">
-            <span>Use the cleanup as the terminal-workflow lesson: let the agent drive, but narrate the messy parts.</span>
+            <input type="checkbox" disabled aria-label="Open item: verify deployed project">
+            <span>Verify the live URL end to end, including the production branch, webhook URL, webhook secret, and any logs needed to debug.</span>
+          </li>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Open item: Tanner explains deployment model">
+            <span>Have Tanner explain the model back: what lives locally, what lives in GitHub, what Vercel deploys, and what never goes in git.</span>
           </li>
         </ul>
       </article>
 
       <article class="tracker-list">
-        <h3>Jake should cover</h3>
+        <h3>Parking lot</h3>
         <ul>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: replay Vercel setup">
-            <span>Replay the Vercel CLI/project/env setup slowly so Tanner can narrate the model back.</span>
+            <input type="checkbox" disabled aria-label="Parking lot item: Cursor and Claude Code">
+            <span>Cursor options: show Cursor, set up the Claude Code extension inside Cursor, and compare it to Claude Code in terminal.</span>
           </li>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: runtime boundaries">
-            <span>Use the runtime-boundaries map to explain local secrets, Vercel env vars, Supabase service keys, ElevenLabs webhooks, and browser-visible public config.</span>
+            <input type="checkbox" disabled aria-label="Parking lot item: GitHub workflow variants">
+            <span>GitHub workflow variants: solo commit and push vs. branch, PR, review, merge to main, and automatic Vercel deploy.</span>
           </li>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: environment variables">
-            <span>Talk through environment variables: local secrets, Vercel secrets, what goes in git, and what never should.</span>
+            <input type="checkbox" disabled aria-label="Parking lot item: runtime boundaries">
+            <span>Runtime boundaries: local secrets, Vercel env vars, Supabase service keys, ElevenLabs webhooks, and browser-visible public config.</span>
           </li>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: connect GitHub and Vercel">
-            <span>Connect GitHub, Vercel, and the local project to the final deploy check, then debug the rough edges in front of Tanner.</span>
+            <input type="checkbox" disabled aria-label="Parking lot item: terminal workflow habits">
+            <span>Terminal workflow habits: dirty worktrees, branches, commits, status checks, and when to let the AI coding agent drive.</span>
           </li>
           <li class="tracker-item">
-            <input type="checkbox" disabled aria-label="Open item: API agent if time">
+            <input type="checkbox" disabled aria-label="Parking lot item: project sprawl">
+            <span>Project sprawl prevention: habits for spinning up new projects, keeping experiments contained, and avoiding mystery folders.</span>
+          </li>
+          <li class="tracker-item">
+            <input type="checkbox" disabled aria-label="Parking lot item: API agent if time">
             <span>If time permits, build an ElevenAgent via API with a live context dataset.</span>
           </li>
         </ul>
