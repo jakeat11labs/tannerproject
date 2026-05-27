@@ -480,7 +480,7 @@
     </article>
     <article class="card">
       <h3>Deployment path</h3>
-      <p>GitHub became the source record, Vercel became the hosted runtime, and environment variables became the boundary between code and secrets.</p>
+      <p>GitHub became the source record, Vercel became the hosted runtime, and Vercel Marketplace became the cleanest path for wiring Supabase config into the deployed project.</p>
     </article>
   </section>
 
@@ -504,6 +504,14 @@
         <li>Local `.env.local` is for local development.</li>
         <li>Vercel env vars are for hosted runtime secrets.</li>
         <li>GitHub should hold code and history, not private credentials.</li>
+      </ul>
+    </article>
+    <article class="card">
+      <h3>Vercel Marketplace decision</h3>
+      <ul>
+        <li>Provisioning Supabase directly would create the database, but leave the app config as a separate manual step.</li>
+        <li>Provisioning Supabase through Vercel links the service to the Vercel project and auto-populates the generated Supabase URL and API keys as environment variables.</li>
+        <li>After that, `vercel env pull` brings the same configuration down for local development without copying secrets by hand.</li>
       </ul>
     </article>
     <article class="card">
@@ -551,7 +559,7 @@
         <div class="ms-card">
           <span class="ms-time">04</span>
           <h3 class="ms-title">Connected hosting and secrets</h3>
-          <p class="ms-beat">Vercel project setup, environment variables, GitHub commits, Supabase integration, and deployment settings became the main infrastructure lesson.</p>
+          <p class="ms-beat">Vercel project setup, environment variables, GitHub commits, and deployment settings became the main infrastructure lesson. A key decision was creating Supabase through Vercel Marketplace so Vercel could become the control point for deployed config and local env pulls.</p>
         </div>
       </article>
 
